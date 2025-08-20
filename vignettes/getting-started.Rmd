@@ -116,3 +116,13 @@ ighv_nuc_fresh <- refreshIMGT(species = "human",
                               gene = "IGHV", 
                               type = "NUC")
 ```
+
+# Conclusion
+
+This has been a general overview of the capabilities of **immReferent** for downloading and caching immune receptor and HLA sequences from IMGT. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/immReferent).
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
