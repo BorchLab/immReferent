@@ -1,6 +1,6 @@
 # immReferent
 
-An R Package for Accessing and Managing IMGT Sequences
+An Interface for Immune Receptor and HLA Gene IMGT Reference Data
 
 ## Introduction 
 
