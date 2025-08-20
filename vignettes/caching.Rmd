@@ -1,17 +1,24 @@
 ---
-title: "Caching and Offline Usage"
-output: rmarkdown::html_vignette
+title: Caching and Offline Usage of IMGT References
+author: 
+- name: Nick Borcherding
+  email: ncborch@gmail.com
+  affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
+date: 'Compiled: `r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  BiocStyle::html_document:
+    toc_float: true
+package: immReferent
 vignette: >
-  %\VignetteIndexEntry{Caching and Offline Usage}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Caching and Offline Usage of IMGT References}
+  %\VignetteEncoding{UTF-8} 
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
+library(BiocStyle)
+set.seed(42)
 ```
 
 ## Introduction
@@ -47,7 +54,8 @@ options(immReferent.cache = "/path/to/my/project/cache")
 immReferent:::.get_cache_dir()
 
 # Any calls to getIMGT() will now use this new location
-hla_data <- getIMGT(gene = "HLA", type = "NUC")
+hla_data <- getIMGT(gene = "HLA", 
+                    type = "NUC")
 ```
 
 To make this change permanent, you can set this option in your `.Rprofile` file.
@@ -58,24 +66,27 @@ The caching system is essential for working on a machine that does not have inte
 
 1.  **Populate the cache:** On a machine with an internet connection, use `getIMGT()` to download all the datasets you will need for your analysis.
 
-    ```r
-    # On an online machine
-    getIMGT(species = "human", gene = "IG") # Download all human Ig genes
-    getIMGT(species = "human", gene = "TCR") # Download all human TCR genes
-    getIMGT(gene = "HLA", type="NUC") # Download HLA data
-    ```
+```{r eval=FALSE}
+getIMGT(species = "human", # Download all human Ig genes
+        gene = "IG") 
+getIMGT(species = "human", # Download all human TCR genes
+        gene = "TCR") 
+getIMGT(gene = "HLA", # Download HLA data
+        type="NUC") 
+```
 
 2.  **Transfer the cache:** Copy the entire cache directory (e.g., `~/.immReferent`) to the offline machine. You can put it anywhere you like, for example, in your project folder.
 
 3.  **Use the cache:** On the offline machine, tell `immReferent` where to find the cache and then use `getIMGT()` or `loadIMGT()` to load the data. No network connection will be required.
 
-    ```r
-    # On the OFFLINE machine
-    options(immReferent.cache = "/path/to/your/transferred/cache")
 
-    # Now you can load the data you need without any downloads
-    ighv_data <- getIMGT(species = "human", gene = "IGHV", type = "NUC")
-    ```
+```{r eval=FALSE}
+options(immReferent.cache = "/path/to/your/transferred/cache")
+
+ighv_data <- getIMGT(species = "human", 
+                     gene = "IGHV", 
+                     type = "NUC")
+```
 
 ## Cache Metadata
 

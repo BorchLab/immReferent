@@ -40,15 +40,15 @@
       return(invisible(NULL))
     }
 
-    fasta_text_nodes <- httr::content(resp, "text", encoding = "UTF-8") %>%
-      rvest::read_html() %>%
+    fasta_text_nodes <- httr::content(resp, "text", encoding = "UTF-8") |>
+      rvest::read_html() |>
       rvest::html_nodes("pre")
 
     if (length(fasta_text_nodes) < 2) {
       warning("Could not find FASTA content in ", url)
       return(invisible(NULL))
     }
-    fasta_text <- fasta_text_nodes[[2]] %>% rvest::html_text()
+    fasta_text <- fasta_text_nodes[[2]] |> rvest::html_text()
 
     if (nchar(fasta_text) > 0) {
       clean_species_name <- gsub(" ", "_", .species_replace_map[[species_key]])

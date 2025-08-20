@@ -5,9 +5,7 @@
 #' @export
 #' @importFrom httr HEAD status_code
 #' @examples
-#' \dontrun{
 #'   is_imgt_available()
-#' }
 is_imgt_available <- function() {
   tryCatch({
     # Use httr::HEAD for a lightweight request and set a timeout

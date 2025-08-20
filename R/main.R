@@ -32,15 +32,20 @@
 #' @return A `DNAStringSet` or `AAStringSet` object containing the requested sequences.
 #' @export
 #' @examples
-#' \dontrun{
+#' if(is_imgt_available()) {
 #'   # Download human IGHV nucleotide sequences
-#'   ighv_nuc <- getIMGT(species = "human", gene = "IGHV", type = "NUC")
+#'   ighv_nuc <- getIMGT(species = "human", 
+#'                       gene = "IGHV", 
+#'                       type = "NUC")
 #'
 #'   # Download all HLA protein sequences
-#'   hla_prot <- getIMGT(gene = "HLA", type = "PROT")
+#'   hla_prot <- getIMGT(gene = "HLA", 
+#'                       type = "PROT")
 #'
 #'   # Download all mouse TRB genes
-#'   trb_mouse <- getIMGT(species = "mouse", gene = "TRB", type = "NUC")
+#'   trb_mouse <- getIMGT(species = "mouse", 
+#'                       gene = "TRB", 
+#'                       type = "NUC")
 #' }
 getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
                     refresh = FALSE, suppressMessages = FALSE) {

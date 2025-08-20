@@ -2,6 +2,7 @@
 # into IMGT query parameters.
 
 # A data frame that maps gene, type, and data source to query parameters
+#' @importFrom tibble tribble
 .imgt_db_map <- tibble::tribble(
   ~gene,   ~type,  ~query_prefix, ~query_label,     ~cache_subdir,     ~filename_prefix,
   # VDJ Nucleotides
