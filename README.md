@@ -4,7 +4,7 @@ An R Package for Accessing and Managing IMGT Sequences
 
 ## Introduction 
 
-<img align="right" src="https://github.com/ncborcherding/immReferent/blob/main/www/immreferent_hex.png" width="305" height="352">
+<img align="right" src="https://github.com/BorchLab/immReferent/blob/main/www/immreferent_hex.png" width="305" height="352">
 
 immReferent is an R package designed to provide a stable, reproducible, and lightweight interface to IMGT immune receptor (TCR/BCR) and HLA sequences.
 It serves as the backbone for computational immunology workflows by ensuring a consistent source of high-quality nucleotide and protein sequences.
