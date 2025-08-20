@@ -32,3 +32,9 @@ A `DNAStringSet` or `AAStringSet` object.
 A convenience wrapper for `getIMGT(..., refresh = TRUE)` to ensure that
 the local cache is updated with the latest versions of the requested sequences.
 }
+\examples{
+if(is_imgt_available()) {
+  # Force a re-download of human IGHV protein sequences
+  ighv_prot_fresh <- refreshIMGT(species = "human", gene = "IGHV", type = "PROT")
+}
+}

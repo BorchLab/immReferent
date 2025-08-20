@@ -37,14 +37,26 @@ This is the main function to download and load reference sequences from IMGT
 and the IPD-IMGT/HLA database. It handles caching of downloaded files.
 }
 \examples{
-\dontrun{
+if(is_imgt_available()) {
   # Download human IGHV nucleotide sequences
-  ighv_nuc <- getIMGT(species = "human", gene = "IGHV", type = "NUC")
+  ighv_nuc <- getIMGT(species = "human", 
+                      gene = "IGHV", 
+                      type = "NUC")
 
   # Download all HLA protein sequences
-  hla_prot <- getIMGT(gene = "HLA", type = "PROT")
+  hla_prot <- getIMGT(gene = "HLA", 
+                      type = "PROT")
 
   # Download all mouse TRB genes
-  trb_mouse <- getIMGT(species = "mouse", gene = "TRB", type = "NUC")
+  trb_mouse <- getIMGT(species = "mouse", 
+                      gene = "TRB", 
+                      type = "NUC")
 }
+
+# Example with a cached sequence file
+test_seqs_file <- system.file("extdata", "test_seqs.fasta", package = "immReferent")
+# In a real scenario, you would copy this to your cache.
+# For this example, we'll read it directly.
+seqs <- Biostrings::readDNAStringSet(test_seqs_file)
+print(seqs)
 }

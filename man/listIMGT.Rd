@@ -12,3 +12,10 @@ A character vector of file paths for the cached datasets.
 \description{
 Scans the cache directory and returns a list of available datasets.
 }
+\examples{
+# List all files in the cache
+cached_files <- listIMGT()
+
+# To see the structure, you can print the first few
+head(cached_files)
+}

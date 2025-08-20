@@ -14,7 +14,5 @@ This function sends a lightweight HEAD request to the main IMGT page to
 check if the service is online and accessible.
 }
 \examples{
-\dontrun{
   is_imgt_available()
-}
 }

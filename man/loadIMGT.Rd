@@ -33,3 +33,11 @@ Loads sequences from the local cache without attempting to download.
 This function relies on `getIMGT(refresh = FALSE)`. If the data is not found
 in the cache, it will be downloaded unless an internet connection is unavailable.
 }
+\examples{
+if(is_imgt_available()) {
+  # First, download a file to ensure it's in the cache
+  getIMGT(species = "human", gene = "IGHV", type = "NUC", suppressMessages = TRUE)
+  # Now, load it from the cache
+  ighv_cached <- loadIMGT(species = "human", gene = "IGHV", type = "NUC")
+}
+}
