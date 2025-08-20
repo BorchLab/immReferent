@@ -1,0 +1,24 @@
+Package: immReferent
+Title: A Consistent Interface for Immune Receptor and HLA Gene Reference Data
+Version: 0.1.0
+Authors@R: person("Jules", "The AI", email = "jules@example.com", role = c("aut", "cre"))
+Description: Provides a consistent interface for downloading, storing, and accessing IMGT immune receptor (TCR/BCR) and HLA sequences (both nucleotide and protein). This package serves as a core dependency for immunogenomics packages, ensuring reliable and high-quality sequence access.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1
+Imports:
+    httr,
+    rvest,
+    yaml,
+    tibble,
+    Biostrings
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    BiocManager,
+    withr,
+    mockery
+Config/testthat/edition: 3
+VignetteBuilder: knitr

@@ -1,0 +1,101 @@
+---
+title: "Getting Started with immReferent"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with immReferent}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The `immReferent` package provides a centralized and easy-to-use interface for downloading, managing, and loading immune repertoire and HLA reference sequences from the IMGT and IPD-IMGT/HLA databases. Its primary goal is to ensure that analyses are based on consistent, up-to-date, and correctly formatted reference data.
+
+This vignette will walk you through the basic functionality of the package.
+
+```{r setup, eval=FALSE}
+# First, load the package
+library(immReferent)
+```
+
+## Downloading Reference Sequences
+
+The main function for all data retrieval is `getIMGT()`. It handles both downloading new data from the source and loading previously downloaded data from a local cache.
+
+### Downloading HLA Sequences
+
+The IPD-IMGT/HLA database provides reference sequences for the Human Leukocyte Antigen (HLA) system. You can download the complete set of nucleotide or protein sequences using `gene = "HLA"`.
+
+```{r get_hla, eval=FALSE}
+# Download all available HLA protein sequences
+# This will download the file to the cache on the first run
+hla_prot <- getIMGT(gene = "HLA", type = "PROT")
+
+# Inspect the result
+print(hla_prot)
+cat("Number of sequences:", length(hla_prot), "\n")
+cat("First sequence name:", names(hla_prot)[1], "\n")
+```
+
+### Downloading TCR/BCR Sequences
+
+For T-cell receptor (TCR) and B-cell receptor (BCR) genes, you can specify the species and the gene or gene family you are interested in.
+
+```{r get_ighv, eval=FALSE}
+# Download human IGHV nucleotide sequences
+ighv_nuc <- getIMGT(species = "human", gene = "IGHV", type = "NUC")
+
+# Inspect the result
+print(ighv_nuc)
+```
+
+You can also download entire families of genes at once by specifying a group name like `"IGH"`, `"IGK"`, `"TRB"`, etc.
+
+```{r get_trb, eval=FALSE}
+# Download all mouse TRB genes (V, D, J, and C)
+trb_mouse <- getIMGT(species = "mouse", gene = "TRB", type = "NUC")
+
+# This object will contain TRBV, TRBD, TRBJ, and TRBC sequences
+print(trb_mouse)
+```
+
+## Working with the Cache
+
+`immReferent` automatically caches all downloaded data to avoid repeated downloads and to enable offline work.
+
+### Listing Cached Files
+
+You can see all the files currently in your cache using the `listIMGT()` function.
+
+```{r list_imgt, eval=FALSE}
+# List the full paths of all cached files
+listIMGT()
+```
+
+### Loading from Cache
+
+When you call `getIMGT()`, it will always load data from the cache if it's available. If you want to *only* load from the cache and prevent any possibility of a download, you can use `loadIMGT()`. This function is useful in offline environments or for ensuring strict reproducibility.
+
+```{r load_imgt, eval=FALSE}
+# This will load from the cache if available, or download otherwise
+ighv_nuc <- getIMGT(species = "human", gene = "IGHV", type = "NUC")
+
+# This will load from the cache, or fail if not found and offline
+ighv_nuc_from_cache <- loadIMGT(species = "human", gene = "IGHV", type = "NUC")
+```
+
+### Refreshing the Cache
+
+If you suspect the online data has been updated and you want to re-download it, you can use `refreshIMGT()`. This is just a convenient shortcut for `getIMGT(..., refresh = TRUE)`.
+
+```{r refresh_imgt, eval=FALSE}
+# Force a re-download of the human IGHV sequences
+ighv_nuc_fresh <- refreshIMGT(species = "human", gene = "IGHV", type = "NUC")
+```
