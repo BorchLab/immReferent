@@ -47,6 +47,13 @@
 #'                       gene = "TRB", 
 #'                       type = "NUC")
 #' }
+#'
+#' # Example with a cached sequence file
+#' test_seqs_file <- system.file("extdata", "test_seqs.fasta", package = "immReferent")
+#' # In a real scenario, you would copy this to your cache.
+#' # For this example, we'll read it directly.
+#' seqs <- Biostrings::readDNAStringSet(test_seqs_file)
+#' print(seqs)
 getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
                     refresh = FALSE, suppressMessages = FALSE) {
 
@@ -81,7 +88,7 @@ getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
   # --- Handle TCR/BCR data ---
   else {
     if (!species %in% names(.species_map)) {
-      stop("Species '", species, "' is not supported for TCR/BCR queries.")
+        stop("Species '", species, "' is not supported for TCR/BCR queries.", call. = FALSE)
     }
 
     target_genes <- if (gene %in% names(.gene_groups)) .gene_groups[[gene]] else gene
@@ -93,7 +100,7 @@ getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
       if (nrow(params) == 0) {
         params <- .imgt_db_map[.imgt_db_map$gene == g & .imgt_db_map$type == "NUC-C", ]
         if (nrow(params) == 0) {
-            if (!suppressMessages) warning("No rule to download '", g, "' with type '", type, "'. Skipping.")
+            if (!suppressMessages) warning("No rule to download '", g, "' with type '", type, "'. Skipping.", call. = FALSE)
             next
         }
       }
@@ -121,7 +128,7 @@ getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
     }
 
     if (length(files_to_load) == 0) {
-      warning("No data could be found or downloaded for the request.")
+      warning("No data could be found or downloaded for the request.", call. = FALSE)
       return(NULL)
     }
 
@@ -133,7 +140,7 @@ getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
       else Biostrings::readAAStringSet(f)
     })
 
-    combined_set <- do.call(c, all_sets[!sapply(all_sets, is.null)])
+    combined_set <- do.call(c, all_sets[!vapply(all_sets, is.null, logical(1))])
     return(combined_set)
   }
 }
@@ -147,6 +154,13 @@ getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
 #' @inheritParams getIMGT
 #' @return A `DNAStringSet` or `AAStringSet` object.
 #' @export
+#' @examples
+#' if(is_imgt_available()) {
+#'   # First, download a file to ensure it's in the cache
+#'   getIMGT(species = "human", gene = "IGHV", type = "NUC", suppressMessages = TRUE)
+#'   # Now, load it from the cache
+#'   ighv_cached <- loadIMGT(species = "human", gene = "IGHV", type = "NUC")
+#' }
 loadIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppressMessages = FALSE) {
   if (!suppressMessages) {
     message("-> `loadIMGT` is a wrapper for `getIMGT(refresh = FALSE)`. It will load from cache if available.")
@@ -162,6 +176,11 @@ loadIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppressM
 #' @inheritParams getIMGT
 #' @return A `DNAStringSet` or `AAStringSet` object.
 #' @export
+#' @examples
+#' if(is_imgt_available()) {
+#'   # Force a re-download of human IGHV protein sequences
+#'   ighv_prot_fresh <- refreshIMGT(species = "human", gene = "IGHV", type = "PROT")
+#' }
 refreshIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppressMessages = FALSE) {
   getIMGT(species = species, gene = gene, type = type, refresh = TRUE, suppressMessages = suppressMessages)
 }
@@ -172,6 +191,12 @@ refreshIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppre
 #'
 #' @return A character vector of file paths for the cached datasets.
 #' @export
+#' @examples
+#' # List all files in the cache
+#' cached_files <- listIMGT()
+#'
+#' # To see the structure, you can print the first few
+#' head(cached_files)
 listIMGT <- function() {
   cache_dir <- .get_cache_dir()
   if (!dir.exists(cache_dir)) {
