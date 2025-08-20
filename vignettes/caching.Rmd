@@ -1,0 +1,95 @@
+---
+title: Caching and Offline Usage of IMGT References
+author: 
+- name: Nick Borcherding
+  email: ncborch@gmail.com
+  affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
+date: 'Compiled: `r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  BiocStyle::html_document:
+    toc_float: true
+package: immReferent
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Caching and Offline Usage of IMGT References}
+  %\VignetteEncoding{UTF-8} 
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
+library(BiocStyle)
+set.seed(42)
+```
+
+## Introduction
+
+A key feature of `immReferent` is its automatic caching system. Every time data is downloaded from an online source, it is stored in a local directory. On subsequent requests for the same data, the package loads the local copy, which is much faster and allows for offline work. This vignette explains how the cache works and how you can manage it.
+
+```{r setup, eval=FALSE}
+library(immReferent)
+```
+
+## The Cache Directory
+
+### Finding the Cache
+
+By default, `immReferent` stores its cache in a directory named `.immReferent` inside your user home directory. You can find the exact path on your system using the internal helper function `.get_cache_dir()` (note the leading dot, which indicates it's not an exported function intended for all users, but useful for this purpose).
+
+```{r find_cache, eval=FALSE}
+# This internal function reveals the current cache path
+immReferent:::.get_cache_dir()
+```
+
+The cache contains subdirectories for each species, and within those, further subdirectories for different data types (e.g., `vdj`, `constant`, `hla`).
+
+### Changing the Cache Location
+
+For some workflows, you may need to store the cache in a different location, such as a shared project directory or a drive with more storage space. You can change the cache location for the current R session by setting an R option.
+
+```{r change_cache, eval=FALSE}
+# Set a new path for the cache
+options(immReferent.cache = "/path/to/my/project/cache")
+
+# Verify the new location
+immReferent:::.get_cache_dir()
+
+# Any calls to getIMGT() will now use this new location
+hla_data <- getIMGT(gene = "HLA", 
+                    type = "NUC")
+```
+
+To make this change permanent, you can set this option in your `.Rprofile` file.
+
+## Offline Workflow
+
+The caching system is essential for working on a machine that does not have internet access. The workflow is simple:
+
+1.  **Populate the cache:** On a machine with an internet connection, use `getIMGT()` to download all the datasets you will need for your analysis.
+
+```{r eval=FALSE}
+getIMGT(species = "human", # Download all human Ig genes
+        gene = "IG") 
+getIMGT(species = "human", # Download all human TCR genes
+        gene = "TCR") 
+getIMGT(gene = "HLA", # Download HLA data
+        type="NUC") 
+```
+
+2.  **Transfer the cache:** Copy the entire cache directory (e.g., `~/.immReferent`) to the offline machine. You can put it anywhere you like, for example, in your project folder.
+
+3.  **Use the cache:** On the offline machine, tell `immReferent` where to find the cache and then use `getIMGT()` or `loadIMGT()` to load the data. No network connection will be required.
+
+
+```{r eval=FALSE}
+options(immReferent.cache = "/path/to/your/transferred/cache")
+
+ighv_data <- getIMGT(species = "human", 
+                     gene = "IGHV", 
+                     type = "NUC")
+```
+
+## Cache Metadata
+
+`immReferent` keeps a log file named `immReferent_log.yaml` in the root of the cache directory. This file tracks when specific datasets were downloaded. This can be useful for reproducibility, allowing you to record the exact state of the reference data used in an analysis.
+
+You can inspect this file manually to see the download history.
