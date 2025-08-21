@@ -59,7 +59,7 @@ refreshIMGT("IGHV")
 
 ## IMGT usage
 
-IMGT is used as a reference for gene names and sequence information can be accessed via getIMGT(). Data from IMGT is under a CC BY-NC-ND 4.0 license. Please be aware that attribution is required for usage and it is the intent of IMGT to not allow derivative or commercial usage.
+IMGT is used as a reference for gene names and sequence information can be accessed via `getIMGT()`. Data from IMGT is under a CC BY-NC-ND 4.0 license. Please be aware that attribution is required for usage and it is the intent of IMGT to not allow derivative or commercial usage.
 
 ## Bug Reports/New Features
 
