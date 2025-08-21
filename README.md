@@ -2,6 +2,11 @@
 
 An Interface for Immune Receptor and HLA Gene IMGT Reference Data
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/BorchLab/immReferent/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BorchLab/immReferent/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/BorchLab/immReferent/graph/badge.svg)](https://app.codecov.io/gh/BorchLab/immReferent)
+<!-- badges: end -->
+
 ## Introduction 
 
 <img align="right" src="https://github.com/BorchLab/immReferent/blob/main/www/immreferent_hex.png" width="305" height="352">
