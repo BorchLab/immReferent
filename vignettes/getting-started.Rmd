@@ -16,7 +16,12 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
+library(immReferent)
+knitr::opts_chunk$set(error=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      tidy = FALSE, 
+                      eval = is_imgt_available())
 library(BiocStyle)
 set.seed(42)
 ```

@@ -9,7 +9,7 @@
 is_imgt_available <- function() {
   tryCatch({
     # Use httr::HEAD for a lightweight request and set a timeout
-    response <- httr::HEAD("https://www.imgt.org", timeout = 5)
+    response <- httr::HEAD("https://www.imgt.org", timeout = 2)
     # Check for a successful status code (2xx)
     httr::status_code(response) >= 200 && httr::status_code(response) < 300
   }, error = function(e) {
