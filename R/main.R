@@ -54,8 +54,11 @@
 #' # For this example, we'll read it directly.
 #' seqs <- Biostrings::readDNAStringSet(test_seqs_file)
 #' print(seqs)
-getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
-                    refresh = FALSE, suppressMessages = FALSE) {
+getIMGT <- function(species = "human", 
+                    gene, 
+                    type = c("NUC", "PROT"),
+                    refresh = FALSE, 
+                    suppressMessages = FALSE) {
 
   .show_license_message(suppress = suppressMessages)
   type <- match.arg(type)
@@ -161,7 +164,10 @@ getIMGT <- function(species = "human", gene, type = c("NUC", "PROT"),
 #'   # Now, load it from the cache
 #'   ighv_cached <- loadIMGT(species = "human", gene = "IGHV", type = "NUC")
 #' }
-loadIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppressMessages = FALSE) {
+loadIMGT <- function(species = "human", 
+                     gene, 
+                     type = c("NUC", "PROT"), 
+                     suppressMessages = FALSE) {
   if (!suppressMessages) {
     message("-> `loadIMGT` is a wrapper for `getIMGT(refresh = FALSE)`. It will load from cache if available.")
   }
@@ -181,8 +187,15 @@ loadIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppressM
 #'   # Force a re-download of human IGHV protein sequences
 #'   ighv_prot_fresh <- refreshIMGT(species = "human", gene = "IGHV", type = "PROT")
 #' }
-refreshIMGT <- function(species = "human", gene, type = c("NUC", "PROT"), suppressMessages = FALSE) {
-  getIMGT(species = species, gene = gene, type = type, refresh = TRUE, suppressMessages = suppressMessages)
+refreshIMGT <- function(species = "human", 
+                        gene, 
+                        type = c("NUC", "PROT"), 
+                        suppressMessages = FALSE) {
+  getIMGT(species = species, 
+          gene = gene, 
+          type = type, 
+          refresh = TRUE, 
+          suppressMessages = suppressMessages)
 }
 
 
