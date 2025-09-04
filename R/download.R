@@ -21,7 +21,7 @@
 
 # --- HLA Download Logic ---
 
-.hla_base_url <- "https://raw.githubusercontent.com/ANHIG/IMGTHLA/Latest/"
+.hla_base_url <- "ftp://ftp.ebi.ac.uk/pub/databases/ipd/imgt/hla/"
 
 #' @title Fetch a Single FASTA File from an IMGT Query
 #' @description Internal function to perform the HTTP request and parsing for a
