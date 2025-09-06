@@ -1,4 +1,4 @@
-# This file contains the main user-facing functions for the immReferent package.
+# This file contains the main IMGT user-facing functions for the immReferent package.
 
 #' @import Biostrings
 #' @importFrom methods new
@@ -13,7 +13,7 @@
   }
 }
 
-#' @title Download and Load Immune Receptor and HLA Sequences
+#' @title Download and Load Immune Receptor and HLA Sequences from IMGT
 #' @description This is the main function to download and load reference sequences from IMGT
 #' and the IPD-IMGT/HLA database. It handles caching of downloaded files.
 #'
@@ -47,13 +47,7 @@
 #'                       gene = "TRB", 
 #'                       type = "NUC")
 #' }
-#'
-#' # Example with a cached sequence file
-#' test_seqs_file <- system.file("extdata", "test_seqs.fasta", package = "immReferent")
-#' # In a real scenario, you would copy this to your cache.
-#' # For this example, we'll read it directly.
-#' seqs <- Biostrings::readDNAStringSet(test_seqs_file)
-#' print(seqs)
+#' 
 getIMGT <- function(species = "human", 
                     gene, 
                     type = c("NUC", "PROT"),
