@@ -96,7 +96,7 @@
 #' @param version "published" (default), "latest", or a specific revision 
 #'    number as character/number.
 #' @param species_subgroup Optional subgroup (e.g., a mouse strain like 
-#'    "C57BL/6"). If it contains '/', OGRDB requires it encoded as "%252f".
+#'    "C57BL/6"). If it contains '/', OGRDB requires it encoded as "\%252f".
 #' @param refresh If TRUE, redownload even if cached.
 #' @param suppressMessages If TRUE, be quiet.
 #' 
@@ -206,20 +206,46 @@ getOGRDB <- function(species = "human",
     return(aa)
   } else { # AIRR JSON
     txt <- readLines(dest_file, warn = FALSE)
+    if (length(txt) == 0L) stop("AIRR JSON is empty: ", dest_file)
     obj <- jsonlite::fromJSON(paste(txt, collapse = "\n"), simplifyVector = FALSE)
-    # Extract sequences from AIRR germline set: look for allele descriptions with 'sequence'
-    alleles <- obj$germline_set$allele_descriptions %||% obj$allele_descriptions
-    if (is.null(alleles)) stop("AIRR JSON schema not recognized: missing allele_descriptions.")
-    seqs <- vapply(alleles, function(a) a$sequence %||% NA_character_, character(1))
-    names <- vapply(alleles, function(a) a$label %||% a$name %||% a$allele_id %||% "", character(1))
+    
+    gs <- NULL
+    if (!is.null(obj$germline_set))            gs <- obj$germline_set
+    else if (!is.null(obj$GermlineSet))       gs <- if (is.list(obj$GermlineSet) && !is.null(obj$GermlineSet[[1]])) obj$GermlineSet[[1]] else obj$GermlineSet
+    else if (!is.null(obj[[1]]$germline_set)) gs <- obj[[1]]$germline_set
+    else if (!is.null(obj[[1]]$GermlineSet))  gs <- obj[[1]]$GermlineSet
+    
+    # pull allele descriptions from either the set or top level
+    alleles <- NULL
+    if (!is.null(gs$allele_descriptions)) alleles <- gs$allele_descriptions
+    else if (!is.null(obj$allele_descriptions)) alleles <- obj$allele_descriptions
+    
+    if (is.null(alleles) || length(alleles) == 0) {
+      stop("AIRR JSON schema not recognized: missing allele_descriptions. ",
+           "Top-level fields: ", paste(names(obj), collapse = ", "))
+    }
+    
+    # extract sequences and labels with multiple fallbacks
+    get_seq <- function(a) {
+      a$sequence %||% a$sequence_ungapped %||% a$sequence_gapped %||% NA_character_
+    }
+    get_name <- function(a) {
+      a$allele_description_name %||% a$label %||% a$name %||%
+        a$allele_id %||% a$sequence_id %||% a$allele_description_id %||% ""
+    }
+    
+    seqs  <- vapply(alleles, get_seq,  character(1), USE.NAMES = FALSE)
+    names <- vapply(alleles, get_name, character(1), USE.NAMES = FALSE)
+    
     keep <- !is.na(seqs) & nzchar(seqs)
-    dna <- Biostrings::DNAStringSet(seqs[keep])
+    dna  <- Biostrings::DNAStringSet(seqs[keep])
     names(dna) <- names[keep]
+    
     if (type == "NUC") return(dna)
-    if (!suppressMessages)
-      message("-> Translating AIRR JSON nucleotide sequences to AA (PROT).")
+    if (!suppressMessages) message("-> Translating AIRR JSON nucleotide sequences to AA (PROT).")
     aa <- Biostrings::translate(dna, if.fuzzy.codon = "X")
     return(aa)
+    
   }
 }
 

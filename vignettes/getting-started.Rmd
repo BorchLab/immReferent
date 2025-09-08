@@ -17,18 +17,27 @@ vignette: >
 
 ```{r, include = FALSE}
 library(immReferent)
-knitr::opts_chunk$set(error=FALSE, 
-                      message=FALSE, 
-                      warning=FALSE, 
-                      tidy = FALSE, 
-                      eval = is_imgt_available())
 library(BiocStyle)
+
+# Make chunks robust on CI: evaluate IMGT or OGRDB examples only if the site is reachable
+imgt_ok  <- try(is_imgt_available(),  silent = TRUE)
+ogrdb_ok <- try(is_ogrdb_available(), silent = TRUE)
+imgt_ok  <- if (inherits(imgt_ok,  "try-error")) FALSE else isTRUE(imgt_ok)
+ogrdb_ok <- if (inherits(ogrdb_ok, "try-error")) FALSE else isTRUE(ogrdb_ok)
+
+knitr::opts_chunk$set(
+  error   = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  tidy    = FALSE
+)
+
 set.seed(42)
 ```
 
 ## Introduction
 
-The `immReferent` package provides a centralized and easy-to-use interface for downloading, managing, and loading immune repertoire and HLA reference sequences from the IMGT and IPD-IMGT/HLA databases. Its primary goal is to ensure that analyses are based on consistent, up-to-date, and correctly formatted reference data.
+The `immReferent` package provides a centralized and easy-to-use interface for downloading, managing, and loading immune repertoire and HLA reference sequences from the IMGT, IPD-IMGT/HLA and OGRDB databases. Its primary goal is to ensure that analyses are based on consistent, up-to-date, and correctly formatted reference data.
 
 This vignette will walk you through the basic functionality of the package.
 
@@ -40,11 +49,11 @@ library(immReferent)
 
 The main function for all data retrieval is `getIMGT()`. It handles both downloading new data from the source and loading previously downloaded data from a local cache.
 
-### Downloading HLA Sequences
+### Downloading HLA Sequences (IPD-IMGT/HLA)
 
 The IPD-IMGT/HLA database provides reference sequences for the Human Leukocyte Antigen (HLA) system. You can download the complete set of nucleotide or protein sequences using `gene = "HLA"`.
 
-```{r get_hla}
+```{r get_hla, eval = imgt_ok}
 # Download all available HLA protein sequences
 # This will download the file to the cache on the first run
 hla_prot <- getIMGT(gene = "HLA", 
@@ -56,11 +65,11 @@ cat("Number of sequences:", length(hla_prot), "\n")
 cat("First sequence name:", names(hla_prot)[1], "\n")
 ```
 
-### Downloading TCR/BCR Sequences
+### Downloading TCR/BCR Sequences (IMGT)
 
 For T-cell receptor (TCR) and B-cell receptor (BCR) genes, you can specify the species and the gene or gene family you are interested in.
 
-```{r get_ighv}
+```{r get_ighv, eval = imgt_ok}
 # Download human IGHV nucleotide sequences
 ighv_nuc <- getIMGT(species = "human", 
                     gene = "IGHV", 
@@ -72,7 +81,7 @@ print(ighv_nuc)
 
 You can also download entire families of genes at once by specifying a group name like `"IGH"`, `"IGK"`, `"TRB"`, etc.
 
-```{r get_trb}
+```{r get_trb, eval = imgt_ok}
 # Download all mouse TRB genes (V, D, J, and C)
 trb_mouse <- getIMGT(species = "mouse",
                      gene = "TRB", 
@@ -82,24 +91,56 @@ trb_mouse <- getIMGT(species = "mouse",
 print(trb_mouse)
 ```
 
+### Downloading Germline Sets from OGRDB (AIRR)
+
+OGRDB provides AIRR-compliant **germline sets** for immunoglobulin loci (and growing coverage more broadly). You can retrieve:
+
+- **FASTA** (gapped or ungapped) nucleotide sequences, or
+- **AIRR JSON**, which we parse into `DNAStringSet` (and optionally translate to `AAStringSet`).
+
+```{r ogrdb_igh_fasta, eval=ogrdb_ok}
+# Human IGH nucleotide sequences (gapped FASTA)
+igh_ogrdb <- getOGRDB(
+  species = "human",
+  locus   = "IGH",
+  type    = "NUC",
+  format  = "FASTA_GAPPED"
+)
+igh_ogrdb
+```
+
+Pulling the AIRR-formatted sequences:
+
+```{r ogrdb_igk_airr, eval=ogrdb_ok}
+# Human IGK sequences via AIRR JSON (parsed to DNAStringSet)
+igk_airr <- getOGRDB(
+  species = "human",
+  locus   = "IGK",
+  type    = "NUC",
+  format  = "AIRR"
+)
+igk_airr
+```
+
 ## Working with the Cache
 
 `immReferent` automatically caches all downloaded data to avoid repeated downloads and to enable offline work.
 
 ### Listing Cached Files
 
-You can see all the files currently in your cache using the `listIMGT()` function.
+You can see all the files currently in your cache using the `listIMGT()` or `listOGRDB()` function.
 
-```{r list_imgt}
+```{r list_imgt, eval=imgt_ok}
 # List the full paths of all cached files
 listIMGT()
+listOGRDB()
 ```
 
 ### Loading from Cache
 
 When you call `getIMGT()`, it will always load data from the cache if it's available. If you want to *only* load from the cache and prevent any possibility of a download, you can use `loadIMGT()`. This function is useful in offline environments or for ensuring strict reproducibility.
 
-```{r load_imgt}
+```{r load_imgt, eval=imgt_ok}
 # This will load from the cache if available, or download otherwise
 ighv_nuc <- getIMGT(species = "human", 
                     gene = "IGHV", 
@@ -111,20 +152,42 @@ ighv_nuc_from_cache <- loadIMGT(species = "human",
                                 type = "NUC")
 ```
 
+Similar to the above, we can pull and load from OGRDB using `getOGRDB()` and `loadOGRDB()`.
+
+```{r eval=ogrdb_ok}
+# This will load from the cache if available, or download otherwise
+igh_nuc <- getOGRDB(species = "human", 
+                    locus = "IGH", 
+                    type = "NUC", 
+                    format = "FASTA_GAPPED")
+
+# This will load from the cache, or fail if not found and offline
+igh_from_cache <- loadOGRDB(species = "human", 
+                            locus = "IGH", 
+                            type = "NUC", 
+                            format = "FASTA_GAPPED")
+```
+
 ### Refreshing the Cache
 
-If you suspect the online data has been updated and you want to re-download it, you can use `refreshIMGT()`. This is just a convenient shortcut for `getIMGT(..., refresh = TRUE)`.
+If you suspect the online data has been updated and you want to re-download it, you can use `refreshIMGT()` or `refreshOGRDB()`. This is just a convenient shortcut for `getIMGT(..., refresh = TRUE)`.
 
-```{r refresh_imgt}
+```{r refresh_imgt, eval=imgt_ok & ogrdb_ok}
 # Force a re-download of the human IGHV sequences
 ighv_nuc_fresh <- refreshIMGT(species = "human", 
                               gene = "IGHV", 
                               type = "NUC")
+
+# Force a re-download of human IGK (gapped FASTA)
+igk_fresh <- refreshOGRDB(species = "human", 
+                          locus = "IGK", 
+                          type = "NUC", 
+                          format = "FASTA_GAPPED")
 ```
 
 # Conclusion
 
-This has been a general overview of the capabilities of **immReferent** for downloading and caching immune receptor and HLA sequences from IMGT. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/immReferent).
+This has been a general overview of the capabilities of **immReferent** for downloading and caching immune receptor and HLA sequences from IMGT and OGRDB. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/immReferent).
 
 ## Session Info
 

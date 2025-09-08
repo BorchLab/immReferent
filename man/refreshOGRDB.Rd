@@ -35,7 +35,7 @@ supported for FASTA or AIRR records that include a valid CDS.}
 number as character/number.}
 
 \item{species_subgroup}{Optional subgroup (e.g., a mouse strain like 
-"C57BL/6"). If it contains '/', OGRDB requires it encoded as "%252f".}
+"C57BL/6"). If it contains '/', OGRDB requires it encoded as "\%252f".}
 
 \item{suppressMessages}{If TRUE, be quiet.}
 }

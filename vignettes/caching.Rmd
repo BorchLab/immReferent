@@ -1,5 +1,5 @@
 ---
-title: Caching and Offline Usage of IMGT References
+title: Caching and Offline Usage of Reference Sets (IMGT & OGRDB)
 author: 
 - name: Nick Borcherding
   email: ncborch@gmail.com
@@ -11,19 +11,26 @@ output:
 package: immReferent
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Caching and Offline Usage of IMGT References}
+  %\VignetteIndexEntry{Caching and Offline Usage of Reference Sets (IMGT & OGRDB)}
   %\VignetteEncoding{UTF-8} 
 ---
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 library(immReferent)
-knitr::opts_chunk$set(error=FALSE, 
-                      message=FALSE, 
-                      warning=FALSE, 
-                      tidy = FALSE, 
-                      is_imgt_available())
 library(BiocStyle)
-set.seed(42)
+
+# Evaluate networked examples only if the corresponding endpoint is reachable
+imgt_ok  <- try(is_imgt_available(),  silent = TRUE)
+ogrdb_ok <- try(is_ogrdb_available(), silent = TRUE)
+imgt_ok  <- if (inherits(imgt_ok,  "try-error")) FALSE else isTRUE(imgt_ok)
+ogrdb_ok <- if (inherits(ogrdb_ok, "try-error")) FALSE else isTRUE(ogrdb_ok)
+
+knitr::opts_chunk$set(
+  error   = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  tidy    = FALSE
+)
 ```
 
 ## Introduction
@@ -80,17 +87,42 @@ getIMGT(gene = "HLA", # Download HLA data
         type="NUC") 
 ```
 
+Or using `getOGRDB()` to access germline immune receptor sequences.
+
+```{r eval=FALSE}
+igh_ogrdb <- getOGRDB(species = "human", # Human IGH as FASTA 
+                      locus = "IGH", 
+                      type = "NUC", 
+                      format = "FASTA_GAPPED")
+
+igk_airr <- getOGRDB(species = "human", # Human IGK via AIRR JSON
+                     locus = "IGK",
+                     type = "NUC", 
+                     format = "AIRR")
+
+igl_prot <- getOGRDB(species = "human", # Human IGL FASTA 
+                     locus = "IGL",
+                     type = "PROT", 
+                     format = "FASTA_UNGAPPED")
+```
+
 2.  **Transfer the cache:** Copy the entire cache directory (e.g., `~/.immReferent`) to the offline machine. You can put it anywhere you like, for example, in your project folder.
 
 3.  **Use the cache:** On the offline machine, tell `immReferent` where to find the cache and then use `getIMGT()` or `loadIMGT()` to load the data. No network connection will be required.
 
-
 ```{r eval=FALSE}
 options(immReferent.cache = "/path/to/your/transferred/cache")
 
+#IMGT
 ighv_data <- getIMGT(species = "human", 
                      gene = "IGHV", 
                      type = "NUC")
+
+# OGRDB
+igh_ogrdb <- loadOGRDB(species = "human", 
+                       locus = "IGH",
+                       type = "NUC", f
+                       ormat = "FASTA_GAPPED")
 ```
 
 ## Cache Metadata
