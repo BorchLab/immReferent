@@ -1,4 +1,4 @@
-# tests/testthat/test-main.R
+# tests/testthat/test-mainIMGT.R
 
 testthat::test_that(".show_license_message shows once and respects suppression", {
   # Reset option
