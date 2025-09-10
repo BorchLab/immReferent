@@ -1,6 +1,6 @@
 # immReferent
 
-An Interface for Immune Receptor and HLA Gene IMGT Reference Data
+An Interface for Immune Receptor and HLA Gene Reference Data
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/BorchLab/immReferent/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BorchLab/immReferent/actions/workflows/R-CMD-check.yaml)
@@ -11,12 +11,18 @@ An Interface for Immune Receptor and HLA Gene IMGT Reference Data
 
 <img align="right" src="https://github.com/BorchLab/immReferent/blob/main/www/immreferent_hex.png" width="305" height="352">
 
-immReferent is an R package designed to provide a stable, reproducible, and lightweight interface to IMGT immune receptor (TCR/BCR) and HLA sequences.
-It serves as the backbone for computational immunology workflows by ensuring a consistent source of high-quality nucleotide and protein sequences.
+immReferent is an R package designed to provide a stable, reproducible, and lightweight interface to IMGT immune receptor (TCR/BCR) and HLA sequences and the AIRR-C's OGRDB. It serves as the backbone for computational immunology workflows by ensuring a consistent source of high-quality nucleotide and protein sequences.
+
+### Interactions
+* [IMGT](https://www.imgt.org/)
+* [IPD-IMGT/HLA](https://www.ebi.ac.uk/ipd/imgt/hla/)
+* [OGRDB](https://ogrdb.airr-community.org/)
+
+Please read more on these amazing resources and cite them in your work!
 
 ### This package enables:
 
-* Downloading IMGT data (receptor and HLA sequences).
+* Downloading IMGT/OGRDB data (receptor and HLA sequences).
 * Caching for offline reproducibility.
 * Querying metadata (allele, gene, species).
 * Interoperability with Bioconductor objects (DNAStringSet, AAStringSet).
@@ -26,7 +32,7 @@ It serves as the backbone for computational immunology workflows by ensuring a c
 As immune repertoire analysis expands, a centralized sequence reference layer is critical for:
 
 * Integrating across tools like [scRepertoire](https://github.com/BorchLab/scRepertoire) and [immApex](https://github.com/BorchLab/immApex)
-* Reducing redundancy by avoiding repeated hard-coded IMGT downloads.
+* Reducing redundancy by avoiding repeated hard-coded IMGT/OGRDB downloads.
 * Guaranteeing reproducibility with cached versions.
 
 # Installation
@@ -37,6 +43,10 @@ devtools::install_github("BorchLab/immReferent")
 ```
 
 # Getting Started
+
+## IMGT usage
+
+IMGT is used as a reference for gene names and sequence information can be accessed via `getIMGT()`. Data from IMGT is under a CC BY-NC-ND 4.0 license. Please be aware that attribution is required for usage and it is the intent of IMGT to not allow derivative or commercial usage.
 
 ```
 library(immReferent)
@@ -57,9 +67,26 @@ listIMGT()
 refreshIMGT("IGHV")
 ```
 
-## IMGT usage
+## OGRDB usage
 
-IMGT is used as a reference for gene names and sequence information can be accessed via `getIMGT()`. Data from IMGT is under a CC BY-NC-ND 4.0 license. Please be aware that attribution is required for usage and it is the intent of IMGT to not allow derivative or commercial usage.
+```
+library(immReferent)
+
+# Check if OGRDB is online
+is_ogrdb_available()
+
+# Download human IGHV sequences
+igk_airr <- getOGRDB(species = "human", locus = "IGK", type = "NUC", format = "AIRR")
+
+# Load cached data
+cached <- loadIMGT(species = "human", locus = "IGK", type = "NUC", format = "AIRR")
+
+# List available datasets
+listOGRDB()
+
+# Refresh cache
+refreshOGRB(species = "human", locus = "IGK", type = "NUC", format = "AIRR")
+```
 
 ## Bug Reports/New Features
 
