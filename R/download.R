@@ -8,7 +8,8 @@
   mouse = "Mus",
   rat = "Rattus+norvegicus",
   rabbit = "Oryctolagus+cuniculus",
-  "rhesus_monkey" = "Macaca+mulatta"
+  "rhesus_monkey" = "Macaca+mulatta",
+  "cyno_monkey" = "Macaca+fascicularis"
 )
 
 .species_replace_map <- list(
@@ -16,7 +17,8 @@
   mouse = "Mus musculus",
   rat = "Rattus norvegicus",
   rabbit = "Oryctolagus cuniculus",
-  "rhesus_monkey" = "Macaca mulatta"
+  "rhesus_monkey" = "Macaca mulatta",
+  "cyno_monkey" = "Macaca fascicularis"
 )
 
 # --- HLA Download Logic ---
