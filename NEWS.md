@@ -1,4 +1,9 @@
-# immReferent VERSION 0.99.1
+# immReferent VERSION 0.99.3
+
+* Adding .Rhistory to gitignore
+* Added immReferent to profile on support.biocondcuctor.org
+
+# immReferent VERSION 0.99.2
 
 Add Support for OGRDB
 

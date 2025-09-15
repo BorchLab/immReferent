@@ -1,6 +1,6 @@
 Package: immReferent
 Title: An Interface for Immune Receptor and HLA Gene IMGT Reference Data
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(
     person(given = "Nick", family = "Borcherding", role = c("aut", "cre"), email = "ncborch@gmail.com"))
 Description: Provides a consistent interface for downloading, storing, and accessing IMGT immune receptor (TCR/BCR) and HLA sequences (both nucleotide and protein). This package serves as a core dependency for immunogenomics packages, ensuring reliable and high-quality sequence access.
