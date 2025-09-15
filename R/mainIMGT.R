@@ -18,7 +18,7 @@
 #' and the IPD-IMGT/HLA database. It handles caching of downloaded files.
 #'
 #' @param species The species for which to download data. Required for TCR/BCR queries.
-#'        Currently supported: "human", "mouse", "rat", "rabbit", "rhesus_monkey". Defaults to "human" for HLA.
+#'        Currently supported: "human", "mouse", "rat", "rabbit", "pig", "rhesus_monkey", "cyno monkey". Defaults to "human" for HLA.
 #' @param gene The gene or locus to download. For TCR/BCR, this can be a specific
 #'        chain (e.g., "IGHV", "TRBJ") or a group (e.g., "IGH", "TCR"). For HLA, use "HLA".
 #' @param type The type of sequence to retrieve. Either "NUC" for nucleotide or
