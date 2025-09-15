@@ -8,6 +8,7 @@
   mouse = "Mus",
   rat = "Rattus+norvegicus",
   rabbit = "Oryctolagus+cuniculus",
+  pig = "Sus+scrofa",
   "rhesus_monkey" = "Macaca+mulatta",
   "cyno_monkey" = "Macaca+fascicularis"
 )
@@ -17,6 +18,7 @@
   mouse = "Mus musculus",
   rat = "Rattus norvegicus",
   rabbit = "Oryctolagus cuniculus",
+  pig = "Sus+scrofa",
   "rhesus_monkey" = "Macaca mulatta",
   "cyno_monkey" = "Macaca fascicularis"
 )
