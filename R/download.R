@@ -9,6 +9,7 @@
   rat = "Rattus+norvegicus",
   rabbit = "Oryctolagus+cuniculus",
   pig = "Sus+scrofa",
+  dog = "Canis+lupus+familiaris", 
   "rhesus_monkey" = "Macaca+mulatta",
   "cyno_monkey" = "Macaca+fascicularis"
 )
@@ -19,6 +20,7 @@
   rat = "Rattus norvegicus",
   rabbit = "Oryctolagus cuniculus",
   pig = "Sus+scrofa",
+  dog = "Canis+lupus+familiaris",
   "rhesus_monkey" = "Macaca mulatta",
   "cyno_monkey" = "Macaca fascicularis"
 )
