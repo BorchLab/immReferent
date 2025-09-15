@@ -1,7 +1,17 @@
+# immReferent VERSION 0.99.4
+
+* Adding return documentation to OGRDB functions
+* Requiring R 4.2 due to use of pipe
+
 # immReferent VERSION 0.99.3
 
 * Adding .Rhistory to gitignore
-* Added immReferent to profile on support.biocondcuctor.org
+* Added immReferent to profile on support.bioconductor.org
+
+# immReferent VERSION 0.99.3
+
+* Adding .Rhistory to gitignore
+* Added immReferent to profile on support.bioconductor.org
 
 # immReferent VERSION 0.99.2
 

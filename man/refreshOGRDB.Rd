@@ -39,6 +39,11 @@ number as character/number.}
 
 \item{suppressMessages}{If TRUE, be quiet.}
 }
+\value{
+The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
+(when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
+after forcing a re-download to refresh the local cache.
+}
 \description{
 A convenience wrapper for `getOGRDB(..., refresh = TRUE)` to 
 ensure that the local cache is updated with the latest versions of the 

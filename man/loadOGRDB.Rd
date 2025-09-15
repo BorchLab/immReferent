@@ -39,6 +39,11 @@ number as character/number.}
 
 \item{suppressMessages}{If TRUE, be quiet.}
 }
+\value{
+The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
+(when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
+loaded from the local cache if present (and downloaded on first use if needed).
+}
 \description{
 Loads sequences from the local cache without attempting to download.
 This function relies on `getOGRDB(refresh = FALSE)`. If the data is not found

@@ -6,6 +6,11 @@
 \usage{
 listOGRDB()
 }
+\value{
+A character vector of absolute file paths to cached OGRDB files
+(length zero if none). Paths are typically under the package cache directory
+(e.g., \code{file.path(.get_cache_dir(), "<Species>", "ogrdb")}).
+}
 \description{
 Scans the cache directory and returns a list of available datasets.
 }

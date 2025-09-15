@@ -271,6 +271,9 @@ getOGRDB <- function(species = "human",
 #'                           type    = "NUC",
 #'                           format  = "FASTA_GAPPED")
 #' }
+#' @return The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
+#' (when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
+#' loaded from the local cache if present (and downloaded on first use if needed).
 #' @export
 loadOGRDB <- function(species = "human", locus = c("IGH","IGK","IGL"),
                       set_name = NULL, type = c("NUC","PROT"),
@@ -296,6 +299,9 @@ loadOGRDB <- function(species = "human", locus = c("IGH","IGK","IGL"),
 #'                             format  = "FASTA_GAPPED")
 #' }
 #' @export
+#' @return The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
+#' (when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
+#' after forcing a re-download to refresh the local cache.
 refreshOGRDB <- function(species = "human", 
                          locus = c("IGH","IGK","IGL"),
                          set_name = NULL, 
@@ -318,6 +324,9 @@ refreshOGRDB <- function(species = "human",
 #'   head(cached_files)
 #' }
 #' @export
+#' @return A character vector of absolute file paths to cached OGRDB files
+#' (length zero if none). Paths are typically under the package cache directory
+#' (e.g., \code{file.path(.get_cache_dir(), "<Species>", "ogrdb")}).
 listOGRDB <- function() {
   cache_dir <- .get_cache_dir()
   if (!dir.exists(cache_dir)) return(character(0))
