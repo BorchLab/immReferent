@@ -1,3 +1,10 @@
+# immReferent VERSION 0.99.5
+
+* Added package level man page
+* Updated R version dependency from 4.2.0 to 4.5.0
+* Added installation instruction via Bioconductor to README and vignette
+* Renamed getting-started vignette to immReferent
+
 # immReferent VERSION 0.99.4
 
 * Adding return documentation to OGRDB functions

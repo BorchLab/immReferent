@@ -38,8 +38,16 @@ As immune repertoire analysis expands, a centralized sequence reference layer is
 # Installation
 
 ```
-# Install development version from GitHub
 devtools::install_github("BorchLab/immReferent")
+```
+
+Or via Bioconductor (once accepted)
+
+```
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("immReferent")
 ```
 
 # Getting Started
