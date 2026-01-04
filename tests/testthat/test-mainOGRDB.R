@@ -1,7 +1,5 @@
 # tests/testthat/test-mainOGRDB.R
 
-context("OGRDB helpers")
-
 # --- Small writers for simulated downloads (FASTA / AIRR JSON) ----------------
 .write_dna_fasta <- function(path) {
   writeLines(c(">IGHV1-1*01", "ATGGCTGCT", ">IGHV1-2*01", "ATGGCAGCT"), path)
