@@ -1,3 +1,24 @@
+# immReferent VERSION 1.0.1
+
+## New Features
+
+* Added export functions for popular immune repertoire analysis tools:
+    - `exportMiXCR()`: Export sequences for MiXCR custom library building
+    - `exportTRUST4()`: Export sequences for TRUST4 analysis
+    - `exportCellRanger()`: Export sequences for 10x Cell Ranger VDJ reference
+    - `exportIgBLAST()`: Export sequences for IgBLAST database creation
+* Export functions work with sequences from both IMGT and OGRDB sources
+
+## Documentation Improvements
+
+* Standardized roxygen2 documentation across all functions with proper
+  formatting using `\code{}`, `\strong{}`, `\itemize{}`, and `\url{}`
+* Added comprehensive `@seealso` sections linking related functions
+* Improved parameter documentation with explicit type specifications
+* Enhanced package-level documentation with function overview
+* Fixed typo in `is_ogrdb_available()` documentation (was incorrectly
+  referencing IMGT)
+
 # immReferent VERSION 0.99.5
 
 * Added package level man page

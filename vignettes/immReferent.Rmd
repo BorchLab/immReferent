@@ -200,9 +200,113 @@ igk_fresh <- refreshOGRDB(species = "human",
                           format = "FASTA_GAPPED")
 ```
 
+## Exporting Reference Databases for External Tools
+
+`immReferent` provides export functions to create reference databases compatible with popular immune repertoire analysis tools. These functions format the downloaded sequences appropriately for each tool.
+
+### Export to MiXCR
+
+[MiXCR](https://mixcr.com/) is a popular tool for analyzing immune repertoire sequencing data. The `exportMiXCR()` function creates FASTA files formatted for MiXCR's `buildLibrary` command.
+
+```{r export_mixcr, eval = imgt_ok}
+# Download human IGH sequences
+igh_seqs <- getIMGT(species = "human",
+                    gene = "IGH",
+                    type = "NUC",
+                    suppressMessages = TRUE)
+
+# Export to MiXCR format
+mixcr_dir <- tempdir()
+mixcr_files <- exportMiXCR(igh_seqs, mixcr_dir, chain = "IGH")
+
+# View created files
+print(mixcr_files)
+
+# View first few lines of V gene file
+if (!is.null(mixcr_files$v_genes)) {
+  cat(head(readLines(mixcr_files$v_genes), 4), sep = "\n")
+}
+```
+
+The output files can be used with MiXCR's `buildLibrary` command:
+```bash
+mixcr buildLibrary \
+    --v-genes-from-fasta v-genes.IGH.fasta \
+    --v-gene-feature VRegion \
+    --j-genes-from-fasta j-genes.IGH.fasta \
+    --d-genes-from-fasta d-genes.IGH.fasta \
+    --c-genes-from-fasta c-genes.IGH.fasta \
+    --chain IGH \
+    --species hs \
+    custom-IGH.json.gz
+```
+
+### Export to TRUST4
+
+[TRUST4](https://github.com/liulab-dfci/TRUST4) is a tool for reconstructing immune repertoires from RNA-seq data. The `exportTRUST4()` function creates a FASTA file compatible with TRUST4's `--ref` parameter.
+
+```{r export_trust4, eval = imgt_ok}
+# Export to TRUST4 format (includes constant regions by default)
+trust4_file <- tempfile(fileext = ".fa")
+exportTRUST4(igh_seqs, trust4_file)
+
+# View header format
+cat(head(readLines(trust4_file), 6), sep = "\n")
+```
+
+Use the exported file with TRUST4:
+```bash
+./run-trust4 -f hg38_bcrtcr.fa --ref custom_IMGT+C.fa \
+    -1 reads_1.fq -2 reads_2.fq -o output
+```
+
+### Export to Cell Ranger VDJ
+
+[Cell Ranger](https://www.10xgenomics.com/support/software/cell-ranger) from 10x Genomics includes VDJ analysis capabilities. The `exportCellRanger()` function creates a FASTA file suitable for building a custom VDJ reference.
+
+```{r export_cellranger, eval = imgt_ok}
+# Export V genes for Cell Ranger
+cellranger_file <- tempfile(fileext = ".fa")
+exportCellRanger(igh_seqs, cellranger_file)
+
+# View header format
+cat(head(readLines(cellranger_file), 4), sep = "\n")
+```
+Note: For a complete Cell Ranger VDJ reference, you also need a GTF file with gene annotations and should use `cellranger mkvdjref` to build the reference.
+
+### Export to IgBLAST
+
+[IgBLAST](https://ncbi.github.io/igblast/) is NCBI's tool for analyzing immunoglobulin and T cell receptor sequences. The `exportIgBLAST()` function creates FASTA files with simplified headers compatible with IgBLAST.
+
+```{r export_igblast, eval = imgt_ok}
+# Export to IgBLAST format
+igblast_dir <- tempdir()
+igblast_files <- exportIgBLAST(igh_seqs, igblast_dir,
+                                organism = "human",
+                                receptor_type = "ig")
+
+# View created files
+print(igblast_files)
+
+# View header format
+if (!is.null(igblast_files$v_genes)) {
+  cat(head(readLines(igblast_files$v_genes), 4), sep = "\n")
+}
+```
+
+After exporting, create BLAST databases using `makeblastdb`:
+```bash
+makeblastdb -parse_seqids -dbtype nucl \
+    -in human_ig_v.fasta -out human_ig_v
+makeblastdb -parse_seqids -dbtype nucl \
+    -in human_ig_d.fasta -out human_ig_d
+makeblastdb -parse_seqids -dbtype nucl \
+    -in human_ig_j.fasta -out human_ig_j
+```
+
 # Conclusion
 
-This has been a general overview of the capabilities of **immReferent** for downloading and caching immune receptor and HLA sequences from IMGT and OGRDB. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/immReferent).
+This has been a general overview of the capabilities of **immReferent** for downloading and caching immune receptor and HLA sequences from IMGT and OGRDB, as well as exporting them to formats compatible with popular analysis tools. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/immReferent).
 
 ## Session Info
 

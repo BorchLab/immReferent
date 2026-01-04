@@ -77,29 +77,66 @@
   dest_file
 }
 
-#' @title Download and Load Immune Receptor Germline Sequences from OGRDB (AIRR)
-#' 
-#' @description Downloads AIRR-compliant germline sets (or FASTA) from OGRDB and 
-#' returns sequences as `DNAStringSet` (NUC) or attempts AA translation for V 
-#' genes.
-#' 
-#' @param species Species string. Accepts "human"/"Homo sapiens"/"mouse"/"Mus 
-#'    musculus".
-#' @param locus Either a locus short code ("IGH","IGK","IGL", etc.) OR NULL if 
-#'    you pass a `set_name` explicitly.
-#' @param set_name Optional explicit OGRDB set name (e.g., "IGH_VDJ"). If 
-#'    provided, overrides `locus`.
-#' @param type "NUC" (default) or "PROT". PROT will translate V-gene CDS; only 
-#'    supported for FASTA or AIRR records that include a valid CDS.
-#' @param format "FASTA_GAPPED", "FASTA_UNGAPPED", or "AIRR". Default 
-#'    "FASTA_GAPPED".
-#' @param version "published" (default), "latest", or a specific revision 
-#'    number as character/number.
-#' @param species_subgroup Optional subgroup (e.g., a mouse strain like 
-#'    "C57BL/6"). If it contains '/', OGRDB requires it encoded as "\%252f".
-#' @param refresh If TRUE, redownload even if cached.
-#' @param suppressMessages If TRUE, be quiet.
-#' 
+#' @title Download and Load Immune Receptor Germline Sequences from OGRDB
+#'
+#' @description Downloads AIRR-compliant germline sets (or FASTA) from OGRDB
+#' (Open Germline Receptor Database) and returns sequences as a
+#' \code{\link[Biostrings]{DNAStringSet}} or
+#' \code{\link[Biostrings]{AAStringSet}}.
+#'
+#' @param species Character string specifying the species. Accepts
+#'   \code{"human"}, \code{"Homo sapiens"}, \code{"mouse"}, or
+#'   \code{"Mus musculus"}. Default is \code{"human"}.
+#' @param locus Character string specifying the locus short code. One of
+#'   \code{"IGH"}, \code{"IGK"}, or \code{"IGL"}. Can be \code{NULL} if you pass
+#'   a \code{set_name} explicitly.
+#' @param set_name Optional character string specifying an explicit OGRDB set
+#'   name (e.g., \code{"IGH_VDJ"}). If provided, overrides \code{locus}.
+#' @param type Character string specifying the sequence type. Either
+#'   \code{"NUC"} (default) for nucleotide or \code{"PROT"} for protein.
+#'   \code{"PROT"} will translate V-gene CDS; only supported for FASTA or AIRR
+#'   records that include a valid CDS.
+#' @param format Character string specifying the download format. One of
+#'   \code{"FASTA_GAPPED"} (default), \code{"FASTA_UNGAPPED"}, or \code{"AIRR"}.
+#' @param version Character string specifying the version. Either
+#'   \code{"published"} (default) or \code{"latest"}.
+#' @param species_subgroup Optional character string specifying a subgroup
+#'   (e.g., a mouse strain like \code{"C57BL/6"}). If it contains \code{/},
+#'   OGRDB requires it encoded as \code{\%252f}.
+#' @param refresh Logical. If \code{TRUE}, forces re-download even if cached.
+#'   Default is \code{FALSE}.
+#' @param suppressMessages Logical. If \code{TRUE}, suppresses informational
+#'   messages. Default is \code{FALSE}.
+#'
+#' @details
+#' OGRDB (Open Germline Receptor Database) is the AIRR Community's curated
+#' repository of germline receptor sequences. It complements IMGT with
+#' additional species support and standardized AIRR JSON format.
+#'
+#' The function supports multiple download formats:
+#' \itemize{
+#'   \item \code{FASTA_GAPPED}: FASTA with IMGT gaps preserved
+#'   \item \code{FASTA_UNGAPPED}: FASTA without gaps
+#'   \item \code{AIRR}: AIRR-C compliant JSON format
+#' }
+#'
+#' @return A \code{\link[Biostrings]{DNAStringSet}} object (when
+#'   \code{type = "NUC"}) or \code{\link[Biostrings]{AAStringSet}} object (when
+#'   \code{type = "PROT"}) containing the requested sequences.
+#'
+#' @export
+#' @importFrom jsonlite fromJSON
+#' @seealso
+#' \code{\link{loadOGRDB}}, \code{\link{refreshOGRDB}} for convenience wrappers
+#'
+#' \code{\link{getIMGT}} for IMGT sequences
+#'
+#' \code{\link{exportMiXCR}}, \code{\link{exportTRUST4}},
+#' \code{\link{exportCellRanger}}, \code{\link{exportIgBLAST}} for exporting
+#' sequences to analysis tools
+#'
+#' \url{https://ogrdb.airr-community.org/} for OGRDB documentation
+#'
 #' @examples
 #' if (is_ogrdb_available()) {
 #'   # Download human IGH nucleotide sequences (gapped FASTA)
@@ -126,11 +163,6 @@
 #'                            type     = "NUC",
 #'                            format   = "FASTA_GAPPED")
 #' }
-#' 
-#' @return `DNAStringSet` for NUC; if `type="PROT"`, returns `AAStringSet` 
-#'    where possible.
-#' @importFrom jsonlite fromJSON
-#' @export
 getOGRDB <- function(species = "human",
                      locus = c("IGH","IGK","IGL"),
                      set_name = NULL,
@@ -252,13 +284,25 @@ getOGRDB <- function(species = "human",
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 #' @title Load Cached OGRDB Sequences
+#'
+#' @description Loads sequences from the local cache without attempting to
+#' download. This function is a convenience wrapper for
+#' \code{getOGRDB(refresh = FALSE)}. If the data is not found in the cache, it
+#' will be downloaded unless an internet connection is unavailable.
+#'
 #' @inheritParams getOGRDB
-#' @description Loads sequences from the local cache without attempting to download.
-#' This function relies on `getOGRDB(refresh = FALSE)`. If the data is not found
-#' in the cache, it will be downloaded unless an internet connection is unavailable.
-#' 
+#'
+#' @return A \code{\link[Biostrings]{DNAStringSet}} object (when
+#'   \code{type = "NUC"}) or \code{\link[Biostrings]{AAStringSet}} object (when
+#'   \code{type = "PROT"}) containing the requested sequences.
+#'
+#' @export
+#' @seealso
+#' \code{\link{getOGRDB}} for the main download function
+#'
+#' \code{\link{refreshOGRDB}} to force re-download
+#'
 #' @examples
-#' 
 #' if (is_ogrdb_available()) {
 #'   # First, ensure the file is cached
 #'   getOGRDB(species = "human", locus = "IGH",
@@ -271,10 +315,6 @@ getOGRDB <- function(species = "human",
 #'                           type    = "NUC",
 #'                           format  = "FASTA_GAPPED")
 #' }
-#' @return The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
-#' (when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
-#' loaded from the local cache if present (and downloaded on first use if needed).
-#' @export
 loadOGRDB <- function(species = "human", locus = c("IGH","IGK","IGL"),
                       set_name = NULL, type = c("NUC","PROT"),
                       format = c("FASTA_GAPPED","FASTA_UNGAPPED","AIRR"),
@@ -285,11 +325,23 @@ loadOGRDB <- function(species = "human", locus = c("IGH","IGK","IGL"),
 }
 
 #' @title Force Re-download of OGRDB Sequences
-#' @description A convenience wrapper for `getOGRDB(..., refresh = TRUE)` to 
-#' ensure that the local cache is updated with the latest versions of the 
+#'
+#' @description A convenience wrapper for \code{getOGRDB(..., refresh = TRUE)}
+#' to ensure that the local cache is updated with the latest versions of the
 #' requested sequences.
-#
+#'
 #' @inheritParams getOGRDB
+#'
+#' @return A \code{\link[Biostrings]{DNAStringSet}} object (when
+#'   \code{type = "NUC"}) or \code{\link[Biostrings]{AAStringSet}} object (when
+#'   \code{type = "PROT"}) containing the requested sequences.
+#'
+#' @export
+#' @seealso
+#' \code{\link{getOGRDB}} for the main download function
+#'
+#' \code{\link{loadOGRDB}} to load from cache without downloading
+#'
 #' @examples
 #' if (is_ogrdb_available()) {
 #'   # Force a re-download of the human IGK sequences
@@ -298,10 +350,6 @@ loadOGRDB <- function(species = "human", locus = c("IGH","IGK","IGL"),
 #'                             type    = "NUC",
 #'                             format  = "FASTA_GAPPED")
 #' }
-#' @export
-#' @return The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
-#' (when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
-#' after forcing a re-download to refresh the local cache.
 refreshOGRDB <- function(species = "human", 
                          locus = c("IGH","IGK","IGL"),
                          set_name = NULL, 
@@ -315,18 +363,25 @@ refreshOGRDB <- function(species = "human",
 }
 
 #' @title List OGRDB Datasets in Local Cache
-#' @description Scans the cache directory and returns a list of available datasets.
-#' 
-#' @examples
-#' if (is_ogrdb_available()) {
-#'   # List cached OGRDB files
-#'   cached_files <- listOGRDB()
-#'   head(cached_files)
-#' }
+#'
+#' @description Scans the cache directory and returns a list of available OGRDB
+#' datasets that have been downloaded.
+#'
+#' @return A character vector of absolute file paths to cached OGRDB files.
+#'   Returns an empty character vector if no OGRDB files have been cached. Paths
+#'   are typically under the package cache directory (e.g.,
+#'   \code{~/.immReferent/<Species>/ogrdb/}).
+#'
 #' @export
-#' @return A character vector of absolute file paths to cached OGRDB files
-#' (length zero if none). Paths are typically under the package cache directory
-#' (e.g., \code{file.path(.get_cache_dir(), "<Species>", "ogrdb")}).
+#' @seealso
+#' \code{\link{getOGRDB}} for downloading sequences
+#'
+#' \code{\link{listIMGT}} for listing IMGT cached files
+#'
+#' @examples
+#' # List cached OGRDB files
+#' cached_files <- listOGRDB()
+#' head(cached_files)
 listOGRDB <- function() {
   cache_dir <- .get_cache_dir()
   if (!dir.exists(cache_dir)) return(character(0))

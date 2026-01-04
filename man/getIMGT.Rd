@@ -13,44 +13,61 @@ getIMGT(
 )
 }
 \arguments{
-\item{species}{The species for which to download data. Required for TCR/BCR queries.
-Currently supported: "human", "mouse", "rat", "rabbit", "pig", "dog", "rhesus_monkey", "cyno monkey". Defaults to "human" for HLA.}
+\item{species}{Character string specifying the species for which to download
+data. Required for TCR/BCR queries. Currently supported species:
+\code{"human"}, \code{"mouse"}, \code{"rat"}, \code{"rabbit"}, \code{"pig"},
+\code{"dog"}, \code{"rhesus_monkey"}, \code{"cyno_monkey"}. Defaults to
+\code{"human"} for HLA queries.}
 
-\item{gene}{The gene or locus to download. For TCR/BCR, this can be a specific
-chain (e.g., "IGHV", "TRBJ") or a group (e.g., "IGH", "TCR"). For HLA, use "HLA".}
+\item{gene}{Character string specifying the gene or locus to download. For
+TCR/BCR, this can be a specific chain (e.g., \code{"IGHV"}, \code{"TRBJ"})
+or a group (e.g., \code{"IGH"}, \code{"TCR"}). For HLA, use \code{"HLA"}.}
 
-\item{type}{The type of sequence to retrieve. Either "NUC" for nucleotide or
-"PROT" for protein sequences. This primarily distinguishes between VDJ nucleotide
-and V-region amino acid sequences for TCR/BCR genes.}
+\item{type}{Character string specifying the type of sequence to retrieve.
+Either \code{"NUC"} for nucleotide or \code{"PROT"} for protein sequences.
+This primarily distinguishes between VDJ nucleotide and V-region amino acid
+sequences for TCR/BCR genes.}
 
-\item{refresh}{Logical. If `TRUE`, forces a re-download of the data even if it
-exists in the cache.}
+\item{refresh}{Logical. If \code{TRUE}, forces a re-download of the data even
+if it exists in the cache. Default is \code{FALSE}.}
 
-\item{suppressMessages}{Logical. If `TRUE`, suppresses the license and other
-informational messages.}
+\item{suppressMessages}{Logical. If \code{TRUE}, suppresses the license and
+other informational messages. Default is \code{FALSE}.}
 }
 \value{
-A `DNAStringSet` or `AAStringSet` object containing the requested sequences.
+A \code{\link[Biostrings]{DNAStringSet}} object (when
+  \code{type = "NUC"}) or \code{\link[Biostrings]{AAStringSet}} object (when
+  \code{type = "PROT"}) containing the requested sequences.
 }
 \description{
-This is the main function to download and load reference sequences from IMGT
-and the IPD-IMGT/HLA database. It handles caching of downloaded files.
+This is the main function to download and load reference
+sequences from IMGT and the IPD-IMGT/HLA database. It handles caching of
+downloaded files.
 }
 \examples{
 if(is_imgt_available()) {
   # Download human IGHV nucleotide sequences
-  ighv_nuc <- getIMGT(species = "human", 
-                      gene = "IGHV", 
+  ighv_nuc <- getIMGT(species = "human",
+                      gene = "IGHV",
                       type = "NUC")
 
   # Download all HLA protein sequences
-  hla_prot <- getIMGT(gene = "HLA", 
+  hla_prot <- getIMGT(gene = "HLA",
                       type = "PROT")
 
   # Download all mouse TRB genes
-  trb_mouse <- getIMGT(species = "mouse", 
-                      gene = "TRB", 
+  trb_mouse <- getIMGT(species = "mouse",
+                      gene = "TRB",
                       type = "NUC")
 }
 
+}
+\seealso{
+\code{\link{loadIMGT}}, \code{\link{refreshIMGT}} for convenience wrappers
+
+\code{\link{getOGRDB}} for OGRDB/AIRR-C germline sequences
+
+\code{\link{exportMiXCR}}, \code{\link{exportTRUST4}},
+\code{\link{exportCellRanger}}, \code{\link{exportIgBLAST}} for exporting
+sequences to analysis tools
 }

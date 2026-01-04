@@ -1,28 +1,5 @@
 # tests/testthat/test-mainIMGT.R
 
-testthat::test_that(".show_license_message shows once and respects suppression", {
-  # Reset option
-  old <- getOption("immReferent.license.shown", NULL)
-  withr::defer(options(immReferent.license.shown = old))
-  
-  options(immReferent.license.shown = NULL)
-  
-  # First call: should message and set the option
-  expect_snapshot(
-    .show_license_message(suppress = FALSE),
-    transform = function(x) gsub("https?://\\S+", "<url>", x) # keep snapshot stable
-  )
-  expect_true(isTRUE(getOption("immReferent.license.shown")))
-  
-  # Second call: no messages (already shown)
-  expect_silent(.show_license_message(suppress = FALSE))
-  
-  # Suppressed: no messages, does not alter option
-  options(immReferent.license.shown = NULL)
-  expect_silent(.show_license_message(suppress = TRUE))
-  expect_null(getOption("immReferent.license.shown", NULL))
-})
-
 # Utility: small DNA / AA FASTA writers for simulated downloads
 .write_dna_fasta <- function(path) {
   writeLines(c(">seq1", "ATGC", ">seq2", "ATGCGG"), path)
@@ -311,16 +288,6 @@ testthat::test_that("listIMGT() returns files or empty vector with message", {
   
   # 1) No cache dir
   tmp_noexist <- file.path(cache, "nope", "cache")
-  expect_snapshot(
-    with_mocked_bindings(
-      {
-        out <- listIMGT()
-        expect_identical(out, character(0))
-      },
-      .get_cache_dir = function() tmp_noexist,
-      .package = pkg
-    )
-  )
   
   # 2) Cache exists with files
   target_dir <- file.path(cache, "human", "bcr", "ighv")

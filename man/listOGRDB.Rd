@@ -7,17 +7,22 @@
 listOGRDB()
 }
 \value{
-A character vector of absolute file paths to cached OGRDB files
-(length zero if none). Paths are typically under the package cache directory
-(e.g., \code{file.path(.get_cache_dir(), "<Species>", "ogrdb")}).
+A character vector of absolute file paths to cached OGRDB files.
+  Returns an empty character vector if no OGRDB files have been cached. Paths
+  are typically under the package cache directory (e.g.,
+  \code{~/.immReferent/<Species>/ogrdb/}).
 }
 \description{
-Scans the cache directory and returns a list of available datasets.
+Scans the cache directory and returns a list of available OGRDB
+datasets that have been downloaded.
 }
 \examples{
-if (is_ogrdb_available()) {
-  # List cached OGRDB files
-  cached_files <- listOGRDB()
-  head(cached_files)
+# List cached OGRDB files
+cached_files <- listOGRDB()
+head(cached_files)
 }
+\seealso{
+\code{\link{getOGRDB}} for downloading sequences
+
+\code{\link{listIMGT}} for listing IMGT cached files
 }

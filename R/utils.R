@@ -1,11 +1,21 @@
 #' @title Check if IMGT Website is Available
-#' @description This function sends a lightweight HEAD request to the main IMGT page to
-#' check if the service is online and accessible.
-#' @return A logical value: `TRUE` if the IMGT website is accessible, `FALSE` otherwise.
+#'
+#' @description Sends a lightweight HEAD request to the main IMGT page to check
+#' if the service is online and accessible. This function is used to
+#' conditionally run examples and tests that require an internet connection.
+#'
+#' @return A logical value: \code{TRUE} if the IMGT website is accessible,
+#'   \code{FALSE} otherwise.
+#'
 #' @export
 #' @importFrom httr HEAD status_code
+#' @seealso
+#' \code{\link{is_ogrdb_available}} for checking OGRDB availability
+#'
+#' \code{\link{getIMGT}} which uses this function
+#'
 #' @examples
-#'   is_imgt_available()
+#' is_imgt_available()
 is_imgt_available <- function() {
   tryCatch({
     # Use httr::HEAD for a lightweight request and set a timeout
@@ -17,13 +27,23 @@ is_imgt_available <- function() {
 }
 
 #' @title Check if OGRDB Website is Available
-#' @description This function sends a lightweight HEAD request to the main OGRDB page to
-#' check if the service is online and accessible.
-#' @return A logical value: `TRUE` if the IMGT website is accessible, `FALSE` otherwise.
+#'
+#' @description Sends a lightweight HEAD request to the OGRDB API to check if
+#' the service is online and accessible. This function is used to conditionally
+#' run examples and tests that require an internet connection.
+#'
+#' @return A logical value: \code{TRUE} if the OGRDB website is accessible,
+#'   \code{FALSE} otherwise.
+#'
 #' @export
 #' @importFrom httr HEAD status_code
+#' @seealso
+#' \code{\link{is_imgt_available}} for checking IMGT availability
+#'
+#' \code{\link{getOGRDB}} which uses this function
+#'
 #' @examples
-#'   is_imgt_available()
+#' is_ogrdb_available()
 is_ogrdb_available <- function() {
   tryCatch({
     response <- httr::HEAD("https://ogrdb.airr-community.org/api", httr::timeout(2))
