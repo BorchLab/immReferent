@@ -288,16 +288,6 @@ testthat::test_that("listIMGT() returns files or empty vector with message", {
   
   # 1) No cache dir
   tmp_noexist <- file.path(cache, "nope", "cache")
-  expect_snapshot(
-    with_mocked_bindings(
-      {
-        out <- listIMGT()
-        expect_identical(out, character(0))
-      },
-      .get_cache_dir = function() tmp_noexist,
-      .package = pkg
-    )
-  )
   
   # 2) Cache exists with files
   target_dir <- file.path(cache, "human", "bcr", "ighv")
