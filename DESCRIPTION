@@ -1,6 +1,6 @@
 Package: immReferent
 Title: An Interface for Immune Receptor and HLA Gene Reference Data
-Version: 1.0.1
+Version: 0.99.6
 Authors@R: c(
     person(given = "Nick", family = "Borcherding", role = c("aut", "cre"), email = "ncborch@gmail.com"))
 Description: Provides a consistent interface for downloading, storing, and

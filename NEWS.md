@@ -1,4 +1,4 @@
-# immReferent VERSION 1.0.1
+# immReferent VERSION 0.99.6
 
 ## New Features
 
