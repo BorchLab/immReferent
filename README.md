@@ -5,6 +5,9 @@ An Interface for Immune Receptor and HLA Gene Reference Data
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/BorchLab/immReferent/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BorchLab/immReferent/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/BorchLab/immReferent/graph/badge.svg)](https://app.codecov.io/gh/BorchLab/immReferent)
+[![Bioc Devel Build](http://www.bioconductor.org/shields/build/devel/bioc/immReferent.svg)](http://www.bioconductor.org/checkResults/devel/bioc-LATEST/immReferent)
+<!--  [![Bioc Release Build](http://www.bioconductor.org/shields/build/release/bioc/immReferent.svg)](http://www.bioconductor.org/checkResults/release/bioc-LATEST/immReferent) -->
+<!-- [![Bioc Downloads](http://www.bioconductor.org/shields/downloads/release/immReferent.svg)](http://bioconductor.org/packages/stats/bioc/immReferent/) -->
 <!-- badges: end -->
 
 ## Introduction 
