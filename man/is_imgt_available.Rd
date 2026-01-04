@@ -7,12 +7,19 @@
 is_imgt_available()
 }
 \value{
-A logical value: `TRUE` if the IMGT website is accessible, `FALSE` otherwise.
+A logical value: \code{TRUE} if the IMGT website is accessible,
+  \code{FALSE} otherwise.
 }
 \description{
-This function sends a lightweight HEAD request to the main IMGT page to
-check if the service is online and accessible.
+Sends a lightweight HEAD request to the main IMGT page to check
+if the service is online and accessible. This function is used to
+conditionally run examples and tests that require an internet connection.
 }
 \examples{
-  is_imgt_available()
+is_imgt_available()
+}
+\seealso{
+\code{\link{is_ogrdb_available}} for checking OGRDB availability
+
+\code{\link{getIMGT}} which uses this function
 }

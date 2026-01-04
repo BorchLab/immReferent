@@ -7,28 +7,36 @@
 exportTRUST4(sequences, output_file, include_constant = TRUE)
 }
 \arguments{
-\item{sequences}{A `DNAStringSet` object containing immune receptor sequences.
-Sequence names should follow IMGT nomenclature (e.g., "IGHV1-2*01").}
+\item{sequences}{A \code{\link[Biostrings]{DNAStringSet}} object containing
+immune receptor sequences. Sequence names must follow standard IG/TR gene
+nomenclature (e.g., \code{"IGHV1-2*01"}). Can be obtained from
+\code{\link{getIMGT}} or \code{\link{getOGRDB}}.}
 
-\item{output_file}{The path to the output FASTA file.}
+\item{output_file}{Character string specifying the path to the output FASTA
+file. The parent directory will be created if it does not exist.}
 
-\item{include_constant}{Logical. If `TRUE`, include constant region sequences.
-TRUST4's IMGT+C.fa file includes constant regions. Default is `TRUE`.}
+\item{include_constant}{Logical. If \code{TRUE} (default), include constant
+region sequences. TRUST4's \code{IMGT+C.fa} file includes constant regions.}
 }
 \value{
-The path to the created file, invisibly.
+Character string with the path to the created file, returned
+  invisibly.
 }
 \description{
-Exports a DNAStringSet to a FASTA file formatted for use with
-TRUST4. The output follows the format produced by TRUST4's `BuildImgtAnnot.pl`
-script.
+Exports a \code{\link[Biostrings]{DNAStringSet}} to a FASTA file
+formatted for use with TRUST4. The output follows the format produced by
+TRUST4's \code{BuildImgtAnnot.pl} script.
 }
 \details{
 TRUST4 expects FASTA files with headers containing only the allele name
-(e.g., ">IGHV1-2*01"). The function reformats sequence headers to match
-the output of TRUST4's `BuildImgtAnnot.pl` script.
+(e.g., \code{>IGHV1-2*01}). The function reformats sequence headers to match
+the output of TRUST4's \code{BuildImgtAnnot.pl} script.
 
-TRUST4 uses this reference for the `--ref` parameter in its analysis pipeline.
+TRUST4 uses this reference for the \code{--ref} parameter in its analysis
+pipeline.
+
+This function works with sequences from both \strong{IMGT} (via
+\code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
 }
 \examples{
 # Create a small example DNAStringSet
@@ -50,5 +58,10 @@ cat(readLines(output_file), sep = "\n")
 unlink(output_file)
 }
 \seealso{
-\url{https://github.com/liulab-dfci/TRUST4}
+\code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+
+\code{\link{exportMiXCR}}, \code{\link{exportCellRanger}},
+\code{\link{exportIgBLAST}} for other export formats
+
+\url{https://github.com/liulab-dfci/TRUST4} for TRUST4 documentation
 }

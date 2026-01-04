@@ -498,3 +498,172 @@ testthat::test_that("exportIgBLAST() does not create C gene file (not used by Ig
   # IgBLAST doesn't use C genes, so no c_genes file should be created
   expect_null(result$c_genes)
 })
+
+# ==============================================================================
+# Tests for OGRDB sequence compatibility
+# ==============================================================================
+
+# Helper function to create OGRDB-style sequences
+# OGRDB sequences may have different header formats than IMGT
+.create_ogrdb_style_seqs <- function() {
+
+  seqs <- Biostrings::DNAStringSet(c(
+    "ATGCGATCGATCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCG",
+    "ATGCGATCGATC",
+    "ATGCGATC"
+  ))
+  # OGRDB headers are typically just the allele name
+  names(seqs) <- c(
+    "IGHV1-2*01",
+    "IGHV3-11*02",
+    "IGHD1-1*01",
+    "IGHJ1*01",
+    "IGHJ4*02"
+  )
+  seqs
+}
+
+testthat::test_that("exportMiXCR() works with OGRDB-style sequences", {
+  seqs <- .create_ogrdb_style_seqs()
+  output_dir <- withr::local_tempdir()
+
+  result <- exportMiXCR(seqs, output_dir, chain = "IGH")
+
+  # Check that expected files were created
+  expect_true(!is.null(result$v_genes))
+  expect_true(!is.null(result$d_genes))
+  expect_true(!is.null(result$j_genes))
+
+  # Check files exist
+  expect_true(file.exists(result$v_genes))
+  expect_true(file.exists(result$d_genes))
+  expect_true(file.exists(result$j_genes))
+
+  # Check content is correct
+  v_content <- readLines(result$v_genes)
+  expect_true(any(grepl("^>IGHV1-2\\*01$", v_content)))
+  expect_true(any(grepl("^>IGHV3-11\\*02$", v_content)))
+})
+
+testthat::test_that("exportTRUST4() works with OGRDB-style sequences", {
+  seqs <- .create_ogrdb_style_seqs()
+  output_file <- tempfile(fileext = ".fa")
+  withr::defer(unlink(output_file))
+
+  result <- exportTRUST4(seqs, output_file)
+
+  expect_true(file.exists(output_file))
+
+  content <- readLines(output_file)
+  # Check that all sequences were exported with simplified headers
+  expect_true(any(grepl("^>IGHV1-2\\*01$", content)))
+  expect_true(any(grepl("^>IGHD1-1\\*01$", content)))
+  expect_true(any(grepl("^>IGHJ1\\*01$", content)))
+})
+
+testthat::test_that("exportCellRanger() works with OGRDB-style sequences", {
+  seqs <- .create_ogrdb_style_seqs()
+  output_file <- tempfile(fileext = ".fa")
+  withr::defer(unlink(output_file))
+
+  result <- exportCellRanger(seqs, output_file)
+
+  expect_true(file.exists(output_file))
+
+  content <- readLines(output_file)
+  expect_true(any(grepl("^>IGHV1-2\\*01$", content)))
+  expect_equal(length(grep("^>", content)), 5)
+})
+
+testthat::test_that("exportIgBLAST() works with OGRDB-style sequences", {
+  seqs <- .create_ogrdb_style_seqs()
+  output_dir <- withr::local_tempdir()
+
+  result <- exportIgBLAST(seqs, output_dir, organism = "human", receptor_type = "ig")
+
+  # Check that expected files were created
+  expect_true(!is.null(result$v_genes))
+  expect_true(!is.null(result$d_genes))
+  expect_true(!is.null(result$j_genes))
+
+  # Check V gene content
+  v_content <- readLines(result$v_genes)
+  expect_true(any(grepl("^>IGHV1-2\\*01$", v_content)))
+  expect_true(any(grepl("^>IGHV3-11\\*02$", v_content)))
+})
+
+testthat::test_that("exportMiXCR() handles OGRDB IGK sequences", {
+  seqs <- Biostrings::DNAStringSet(c(
+    "ATGCGATCGATCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCG"
+  ))
+  names(seqs) <- c("IGKV1-5*01", "IGKV3-20*01", "IGKJ1*01")
+
+  output_dir <- withr::local_tempdir()
+  result <- exportMiXCR(seqs, output_dir, chain = "IGK")
+
+  expect_true(!is.null(result$v_genes))
+  expect_true(!is.null(result$j_genes))
+
+  v_content <- readLines(result$v_genes)
+  expect_true(any(grepl("^>IGKV1-5\\*01$", v_content)))
+  expect_true(any(grepl("^>IGKV3-20\\*01$", v_content)))
+})
+
+testthat::test_that("exportMiXCR() handles OGRDB IGL sequences", {
+  seqs <- Biostrings::DNAStringSet(c(
+    "ATGCGATCGATCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCG"
+  ))
+  names(seqs) <- c("IGLV1-40*01", "IGLV2-14*01", "IGLJ1*01")
+
+  output_dir <- withr::local_tempdir()
+  result <- exportMiXCR(seqs, output_dir, chain = "IGL")
+
+  expect_true(!is.null(result$v_genes))
+  expect_true(!is.null(result$j_genes))
+
+  v_content <- readLines(result$v_genes)
+  expect_true(any(grepl("^>IGLV1-40\\*01$", v_content)))
+  expect_true(any(grepl("^>IGLV2-14\\*01$", v_content)))
+})
+
+testthat::test_that("exportIgBLAST() correctly filters OGRDB IG vs TCR sequences", {
+  # Create mixed IG and TCR sequences
+  seqs <- Biostrings::DNAStringSet(c(
+    "ATGCGATCGATCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCG",
+    "ATGCGATCGATC"
+  ))
+  names(seqs) <- c("IGHV1-2*01", "TRBV1-1*01", "IGHJ1*01", "TRBJ1-1*01")
+
+  output_dir <- withr::local_tempdir()
+
+  # Export IG only
+  result_ig <- exportIgBLAST(seqs, output_dir, organism = "human", receptor_type = "ig")
+
+  expect_true(!is.null(result_ig$v_genes))
+  expect_true(!is.null(result_ig$j_genes))
+
+  # Should only contain IG sequences
+  v_content <- readLines(result_ig$v_genes)
+  expect_true(any(grepl("^>IGHV1-2\\*01$", v_content)))
+  expect_false(any(grepl("TRBV", v_content)))
+
+  # Export TCR only
+  output_dir_tcr <- withr::local_tempdir()
+  result_tcr <- exportIgBLAST(seqs, output_dir_tcr, organism = "human", receptor_type = "tcr")
+
+  expect_true(!is.null(result_tcr$v_genes))
+  expect_true(!is.null(result_tcr$j_genes))
+
+  # Should only contain TCR sequences
+  v_content_tcr <- readLines(result_tcr$v_genes)
+  expect_true(any(grepl("^>TRBV1-1\\*01$", v_content_tcr)))
+  expect_false(any(grepl("IGHV", v_content_tcr)))
+})

@@ -2,29 +2,54 @@
 # compatible with various immune repertoire analysis tools.
 
 #' @title Export Reference Sequences to MiXCR Format
-#' @description Exports a DNAStringSet or AAStringSet to FASTA files formatted
-#' for use with MiXCR's `buildLibrary` command. The function creates separate
-#' FASTA files for V, D, J, and C gene segments.
 #'
-#' @param sequences A `DNAStringSet` or `AAStringSet` object containing immune
-#'        receptor sequences. Sequence names should follow IMGT nomenclature
-#'        (e.g., "IGHV1-2*01", "TRBJ2-1*01").
-#' @param output_dir The directory where output files will be written.
-#' @param chain The chain type for the output files. One of "IGH", "IGK", "IGL",
-#'        "TRA", "TRB", "TRD", or "TRG".
+#' @description Exports a \code{\link[Biostrings]{DNAStringSet}} or
+#' \code{\link[Biostrings]{AAStringSet}} to FASTA files formatted for use with
+#' MiXCR's \code{buildLibrary} command. The function creates separate FASTA
+#' files for V, D, J, and C gene segments.
+#'
+#' @param sequences A \code{\link[Biostrings]{DNAStringSet}} or
+#'   \code{\link[Biostrings]{AAStringSet}} object containing immune receptor
+#'   sequences. Sequence names must follow standard IG/TR gene nomenclature
+#'   (e.g., \code{"IGHV1-2*01"}, \code{"TRBJ2-1*01"}). Can be obtained from
+#'   \code{\link{getIMGT}} or \code{\link{getOGRDB}}.
+#' @param output_dir Character string specifying the directory where output
+#'   files will be written. The directory will be created if it does not exist.
+#' @param chain Character string specifying the chain type for the output files.
+#'   Must be one of \code{"IGH"}, \code{"IGK"}, \code{"IGL"}, \code{"TRA"},
+#'   \code{"TRB"}, \code{"TRD"}, or \code{"TRG"}.
 #'
 #' @details
 #' MiXCR expects FASTA files with simple headers containing only the gene name.
 #' The function filters sequences by gene type (V, D, J, C) based on the gene
-
 #' name pattern and writes separate files for each segment type.
 #'
-#' Output files follow the naming convention: `v-genes.<chain>.fasta`,
-#' `d-genes.<chain>.fasta`, `j-genes.<chain>.fasta`, `c-genes.<chain>.fasta`.
+#' Output files follow the naming convention:
+#' \itemize{
+#'   \item \code{v-genes.<chain>.fasta}
+#'   \item \code{d-genes.<chain>.fasta}
+#'   \item \code{j-genes.<chain>.fasta}
+#'   \item \code{c-genes.<chain>.fasta}
+#' }
 #'
-#' @return A named list containing the paths to the created files, invisibly.
+#' This function works with sequences from both \strong{IMGT} (via
+#' \code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
+#'
+#' @return A named list containing the paths to the created files, returned
+#'   invisibly. The list may contain elements \code{v_genes}, \code{d_genes},
+#'   \code{j_genes}, and \code{c_genes} depending on which segment types were
+#'   found in the input sequences.
+#'
 #' @export
-#' @seealso \url{https://mixcr.com/mixcr/guides/create-custom-library/}
+#' @seealso
+#' \code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+#'
+#' \code{\link{exportTRUST4}}, \code{\link{exportCellRanger}},
+#' \code{\link{exportIgBLAST}} for other export formats
+#'
+#' \url{https://mixcr.com/mixcr/guides/create-custom-library/} for MiXCR
+#' documentation
+#'
 #' @examples
 #' # Create a small example DNAStringSet
 #' seqs <- Biostrings::DNAStringSet(c(
@@ -52,7 +77,7 @@ exportMiXCR <- function(sequences, output_dir, chain = c("IGH", "IGK", "IGL", "T
   # Get sequence names
   seq_names <- names(sequences)
   if (is.null(seq_names)) {
-    stop("Sequences must have names following IMGT nomenclature.", call. = FALSE)
+    stop("Sequences must have names following IG/TR gene nomenclature (e.g., 'IGHV1-2*01').", call. = FALSE)
   }
 
   # Categorize sequences by segment type
@@ -108,26 +133,43 @@ exportMiXCR <- function(sequences, output_dir, chain = c("IGH", "IGK", "IGL", "T
 
 
 #' @title Export Reference Sequences to TRUST4 Format
-#' @description Exports a DNAStringSet to a FASTA file formatted for use with
-#' TRUST4. The output follows the format produced by TRUST4's `BuildImgtAnnot.pl`
-#' script.
 #'
-#' @param sequences A `DNAStringSet` object containing immune receptor sequences.
-#'        Sequence names should follow IMGT nomenclature (e.g., "IGHV1-2*01").
-#' @param output_file The path to the output FASTA file.
-#' @param include_constant Logical. If `TRUE`, include constant region sequences.
-#'        TRUST4's IMGT+C.fa file includes constant regions. Default is `TRUE`.
+#' @description Exports a \code{\link[Biostrings]{DNAStringSet}} to a FASTA file
+#' formatted for use with TRUST4. The output follows the format produced by
+#' TRUST4's \code{BuildImgtAnnot.pl} script.
+#'
+#' @param sequences A \code{\link[Biostrings]{DNAStringSet}} object containing
+#'   immune receptor sequences. Sequence names must follow standard IG/TR gene
+#'   nomenclature (e.g., \code{"IGHV1-2*01"}). Can be obtained from
+#'   \code{\link{getIMGT}} or \code{\link{getOGRDB}}.
+#' @param output_file Character string specifying the path to the output FASTA
+#'   file. The parent directory will be created if it does not exist.
+#' @param include_constant Logical. If \code{TRUE} (default), include constant
+#'   region sequences. TRUST4's \code{IMGT+C.fa} file includes constant regions.
 #'
 #' @details
 #' TRUST4 expects FASTA files with headers containing only the allele name
-#' (e.g., ">IGHV1-2*01"). The function reformats sequence headers to match
-#' the output of TRUST4's `BuildImgtAnnot.pl` script.
+#' (e.g., \code{>IGHV1-2*01}). The function reformats sequence headers to match
+#' the output of TRUST4's \code{BuildImgtAnnot.pl} script.
 #'
-#' TRUST4 uses this reference for the `--ref` parameter in its analysis pipeline.
+#' TRUST4 uses this reference for the \code{--ref} parameter in its analysis
+#' pipeline.
 #'
-#' @return The path to the created file, invisibly.
+#' This function works with sequences from both \strong{IMGT} (via
+#' \code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
+#'
+#' @return Character string with the path to the created file, returned
+#'   invisibly.
+#'
 #' @export
-#' @seealso \url{https://github.com/liulab-dfci/TRUST4}
+#' @seealso
+#' \code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+#'
+#' \code{\link{exportMiXCR}}, \code{\link{exportCellRanger}},
+#' \code{\link{exportIgBLAST}} for other export formats
+#'
+#' \url{https://github.com/liulab-dfci/TRUST4} for TRUST4 documentation
+#'
 #' @examples
 #' # Create a small example DNAStringSet
 #' seqs <- Biostrings::DNAStringSet(c(
@@ -153,7 +195,7 @@ exportTRUST4 <- function(sequences, output_file, include_constant = TRUE) {
 
   seq_names <- names(sequences)
   if (is.null(seq_names)) {
-    stop("Sequences must have names following IMGT nomenclature.", call. = FALSE)
+    stop("Sequences must have names following IG/TR gene nomenclature (e.g., 'IGHV1-2*01').", call. = FALSE)
   }
 
   # Filter out constant regions if requested
@@ -188,28 +230,46 @@ exportTRUST4 <- function(sequences, output_file, include_constant = TRUE) {
 
 
 #' @title Export Reference Sequences to Cell Ranger VDJ Format
-#' @description Exports a DNAStringSet to FASTA format suitable for creating
-#' a custom Cell Ranger VDJ reference. The function generates a FASTA file
-#' with properly formatted headers for use with `cellranger mkvdjref`.
 #'
-#' @param sequences A `DNAStringSet` object containing immune receptor sequences.
-#'        Sequence names should follow IMGT nomenclature (e.g., "IGHV1-2*01").
-#' @param output_file The path to the output FASTA file.
-#' @param gene_type The type of gene region. One of "V", "D", "J", or "C".
-#'        If NULL (default), the function will attempt to infer the type from
-#'        sequence names.
+#' @description Exports a \code{\link[Biostrings]{DNAStringSet}} to FASTA format
+#' suitable for creating a custom Cell Ranger VDJ reference. The function
+#' generates a FASTA file with properly formatted headers for use with
+#' \code{cellranger mkvdjref}.
+#'
+#' @param sequences A \code{\link[Biostrings]{DNAStringSet}} object containing
+#'   immune receptor sequences. Sequence names must follow standard IG/TR gene
+#'   nomenclature (e.g., \code{"IGHV1-2*01"}). Can be obtained from
+#'   \code{\link{getIMGT}} or \code{\link{getOGRDB}}.
+#' @param output_file Character string specifying the path to the output FASTA
+#'   file. The parent directory will be created if it does not exist.
+#' @param gene_type Character string specifying the type of gene region. One of
+#'   \code{"V"}, \code{"D"}, \code{"J"}, or \code{"C"}. If \code{NULL} (default),
+#'   the function will attempt to infer the type from sequence names.
 #'
 #' @details
-#' Cell Ranger's `mkvdjref` command expects FASTA files with specific header
-#' formats. This function creates a FASTA file that can be used as input
+#' Cell Ranger's \code{mkvdjref} command expects FASTA files with specific
+#' header formats. This function creates a FASTA file that can be used as input
 #' to build a custom VDJ reference.
 #'
-#' Note: For a complete Cell Ranger VDJ reference, you also need a GTF file
-#' with gene annotations. This function only creates the FASTA component.
+#' \strong{Note:} For a complete Cell Ranger VDJ reference, you also need a GTF
+#' file with gene annotations. This function only creates the FASTA component.
 #'
-#' @return The path to the created file, invisibly.
+#' This function works with sequences from both \strong{IMGT} (via
+#' \code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
+#'
+#' @return Character string with the path to the created file, returned
+#'   invisibly.
+#'
 #' @export
-#' @seealso \url{https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-5p-references}
+#' @seealso
+#' \code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+#'
+#' \code{\link{exportMiXCR}}, \code{\link{exportTRUST4}},
+#' \code{\link{exportIgBLAST}} for other export formats
+#'
+#' \url{https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-5p-references}
+#' for Cell Ranger documentation
+#'
 #' @examples
 #' # Create a small example DNAStringSet
 #' seqs <- Biostrings::DNAStringSet(c(
@@ -232,13 +292,13 @@ exportCellRanger <- function(sequences, output_file, gene_type = NULL) {
     stop("sequences must be a DNAStringSet object.", call. = FALSE)
   }
 
-  seq_names <- names(sequences)
-  if (is.null(seq_names)) {
-    stop("Sequences must have names following IMGT nomenclature.", call. = FALSE)
-  }
-
   if (length(sequences) == 0) {
     stop("No sequences to export.", call. = FALSE)
+  }
+
+  seq_names <- names(sequences)
+  if (is.null(seq_names)) {
+    stop("Sequences must have names following IG/TR gene nomenclature (e.g., 'IGHV1-2*01').", call. = FALSE)
   }
 
   # Cell Ranger expects clean gene names
@@ -260,37 +320,60 @@ exportCellRanger <- function(sequences, output_file, gene_type = NULL) {
 
 
 #' @title Export Reference Sequences to IgBLAST Format
-#' @description Exports a DNAStringSet to FASTA files formatted for use with
-#' IgBLAST. The function creates separate FASTA files for V, D, and J gene
-#' segments with simplified headers compatible with IgBLAST's requirements.
 #'
-#' @param sequences A `DNAStringSet` object containing immune receptor sequences.
-#'        Sequence names should follow IMGT nomenclature (e.g., "IGHV1-2*01").
-#' @param output_dir The directory where output files will be written.
-#' @param organism The organism name for the output files. Used in file naming.
-#'        Default is "custom".
-#' @param receptor_type The receptor type. One of "ig" for immunoglobulin or
-#'        "tcr" for T-cell receptor. Default is "ig".
+#' @description Exports a \code{\link[Biostrings]{DNAStringSet}} to FASTA files
+#' formatted for use with IgBLAST. The function creates separate FASTA files
+#' for V, D, and J gene segments with simplified headers compatible with
+#' IgBLAST's requirements.
+#'
+#' @param sequences A \code{\link[Biostrings]{DNAStringSet}} object containing
+#'   immune receptor sequences. Sequence names must follow standard IG/TR gene
+#'   nomenclature (e.g., \code{"IGHV1-2*01"}). Can be obtained from
+#'   \code{\link{getIMGT}} or \code{\link{getOGRDB}}.
+#' @param output_dir Character string specifying the directory where output
+#'   files will be written. The directory will be created if it does not exist.
+#' @param organism Character string specifying the organism name for the output
+#'   files. Used in file naming. Default is \code{"custom"}.
+#' @param receptor_type Character string specifying the receptor type. One of
+#'   \code{"ig"} for immunoglobulin or \code{"tcr"} for T-cell receptor. Default
+#'   is \code{"ig"}.
 #'
 #' @details
 #' IgBLAST requires FASTA files with simplified headers containing only the
 #' gene/allele name. This function mimics the output of IgBLAST's
-#' `edit_imgt_file.pl` script, which truncates IMGT headers to keep only
+#' \code{edit_imgt_file.pl} script, which truncates IMGT headers to keep only
 #' the allele designation.
 #'
 #' Output files follow the naming convention used by IgBLAST:
-#' `<organism>_<receptor_type>_v.fasta`, `<organism>_<receptor_type>_d.fasta`,
-#' `<organism>_<receptor_type>_j.fasta`.
+#' \itemize{
+#'   \item \code{<organism>_<receptor_type>_v.fasta}
+#'   \item \code{<organism>_<receptor_type>_d.fasta}
+#'   \item \code{<organism>_<receptor_type>_j.fasta}
+#' }
 #'
-#' After exporting, use `makeblastdb` with the `-parse_seqids` flag to create
-#' the BLAST database:
-#' ```
+#' After exporting, use \code{makeblastdb} with the \code{-parse_seqids} flag
+#' to create the BLAST database:
+#' \preformatted{
 #' makeblastdb -parse_seqids -dbtype nucl -in <fasta_file> -out <db_name>
-#' ```
+#' }
 #'
-#' @return A named list containing the paths to the created files, invisibly.
+#' This function works with sequences from both \strong{IMGT} (via
+#' \code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
+#'
+#' @return A named list containing the paths to the created files, returned
+#'   invisibly. The list may contain elements \code{v_genes}, \code{d_genes},
+#'   and \code{j_genes} depending on which segment types were found in the
+#'   input sequences.
+#'
 #' @export
-#' @seealso \url{https://ncbi.github.io/igblast/}
+#' @seealso
+#' \code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+#'
+#' \code{\link{exportMiXCR}}, \code{\link{exportTRUST4}},
+#' \code{\link{exportCellRanger}} for other export formats
+#'
+#' \url{https://ncbi.github.io/igblast/} for IgBLAST documentation
+#'
 #' @examples
 #' # Create a small example DNAStringSet
 #' seqs <- Biostrings::DNAStringSet(c(
@@ -320,7 +403,7 @@ exportIgBLAST <- function(sequences, output_dir, organism = "custom", receptor_t
 
   seq_names <- names(sequences)
   if (is.null(seq_names)) {
-    stop("Sequences must have names following IMGT nomenclature.", call. = FALSE)
+    stop("Sequences must have names following IG/TR gene nomenclature (e.g., 'IGHV1-2*01').", call. = FALSE)
   }
 
   # IgBLAST's edit_imgt_file.pl simplifies headers to just the allele name

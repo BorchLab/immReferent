@@ -16,37 +16,43 @@ refreshOGRDB(
 )
 }
 \arguments{
-\item{species}{Species string. Accepts "human"/"Homo sapiens"/"mouse"/"Mus 
-musculus".}
+\item{species}{Character string specifying the species. Accepts
+\code{"human"}, \code{"Homo sapiens"}, \code{"mouse"}, or
+\code{"Mus musculus"}. Default is \code{"human"}.}
 
-\item{locus}{Either a locus short code ("IGH","IGK","IGL", etc.) OR NULL if 
-you pass a `set_name` explicitly.}
+\item{locus}{Character string specifying the locus short code. One of
+\code{"IGH"}, \code{"IGK"}, or \code{"IGL"}. Can be \code{NULL} if you pass
+a \code{set_name} explicitly.}
 
-\item{set_name}{Optional explicit OGRDB set name (e.g., "IGH_VDJ"). If 
-provided, overrides `locus`.}
+\item{set_name}{Optional character string specifying an explicit OGRDB set
+name (e.g., \code{"IGH_VDJ"}). If provided, overrides \code{locus}.}
 
-\item{type}{"NUC" (default) or "PROT". PROT will translate V-gene CDS; only 
-supported for FASTA or AIRR records that include a valid CDS.}
+\item{type}{Character string specifying the sequence type. Either
+\code{"NUC"} (default) for nucleotide or \code{"PROT"} for protein.
+\code{"PROT"} will translate V-gene CDS; only supported for FASTA or AIRR
+records that include a valid CDS.}
 
-\item{format}{"FASTA_GAPPED", "FASTA_UNGAPPED", or "AIRR". Default 
-"FASTA_GAPPED".}
+\item{format}{Character string specifying the download format. One of
+\code{"FASTA_GAPPED"} (default), \code{"FASTA_UNGAPPED"}, or \code{"AIRR"}.}
 
-\item{version}{"published" (default), "latest", or a specific revision 
-number as character/number.}
+\item{version}{Character string specifying the version. Either
+\code{"published"} (default) or \code{"latest"}.}
 
-\item{species_subgroup}{Optional subgroup (e.g., a mouse strain like 
-"C57BL/6"). If it contains '/', OGRDB requires it encoded as "\%252f".}
+\item{species_subgroup}{Optional character string specifying a subgroup
+(e.g., a mouse strain like \code{"C57BL/6"}). If it contains \code{/},
+OGRDB requires it encoded as \code{\%252f}.}
 
-\item{suppressMessages}{If TRUE, be quiet.}
+\item{suppressMessages}{Logical. If \code{TRUE}, suppresses informational
+messages. Default is \code{FALSE}.}
 }
 \value{
-The same object type as \code{getOGRDB()}: a \code{DNAStringSet}
-(when \code{type = "NUC"}) or an \code{AAStringSet} (when \code{type = "PROT"}),
-after forcing a re-download to refresh the local cache.
+A \code{\link[Biostrings]{DNAStringSet}} object (when
+  \code{type = "NUC"}) or \code{\link[Biostrings]{AAStringSet}} object (when
+  \code{type = "PROT"}) containing the requested sequences.
 }
 \description{
-A convenience wrapper for `getOGRDB(..., refresh = TRUE)` to 
-ensure that the local cache is updated with the latest versions of the 
+A convenience wrapper for \code{getOGRDB(..., refresh = TRUE)}
+to ensure that the local cache is updated with the latest versions of the
 requested sequences.
 }
 \examples{
@@ -57,4 +63,9 @@ if (is_ogrdb_available()) {
                             type    = "NUC",
                             format  = "FASTA_GAPPED")
 }
+}
+\seealso{
+\code{\link{getOGRDB}} for the main download function
+
+\code{\link{loadOGRDB}} to load from cache without downloading
 }

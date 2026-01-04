@@ -12,26 +12,34 @@ loadIMGT(
 )
 }
 \arguments{
-\item{species}{The species for which to download data. Required for TCR/BCR queries.
-Currently supported: "human", "mouse", "rat", "rabbit", "pig", "dog", "rhesus_monkey", "cyno monkey". Defaults to "human" for HLA.}
+\item{species}{Character string specifying the species for which to download
+data. Required for TCR/BCR queries. Currently supported species:
+\code{"human"}, \code{"mouse"}, \code{"rat"}, \code{"rabbit"}, \code{"pig"},
+\code{"dog"}, \code{"rhesus_monkey"}, \code{"cyno_monkey"}. Defaults to
+\code{"human"} for HLA queries.}
 
-\item{gene}{The gene or locus to download. For TCR/BCR, this can be a specific
-chain (e.g., "IGHV", "TRBJ") or a group (e.g., "IGH", "TCR"). For HLA, use "HLA".}
+\item{gene}{Character string specifying the gene or locus to download. For
+TCR/BCR, this can be a specific chain (e.g., \code{"IGHV"}, \code{"TRBJ"})
+or a group (e.g., \code{"IGH"}, \code{"TCR"}). For HLA, use \code{"HLA"}.}
 
-\item{type}{The type of sequence to retrieve. Either "NUC" for nucleotide or
-"PROT" for protein sequences. This primarily distinguishes between VDJ nucleotide
-and V-region amino acid sequences for TCR/BCR genes.}
+\item{type}{Character string specifying the type of sequence to retrieve.
+Either \code{"NUC"} for nucleotide or \code{"PROT"} for protein sequences.
+This primarily distinguishes between VDJ nucleotide and V-region amino acid
+sequences for TCR/BCR genes.}
 
-\item{suppressMessages}{Logical. If `TRUE`, suppresses the license and other
-informational messages.}
+\item{suppressMessages}{Logical. If \code{TRUE}, suppresses the license and
+other informational messages. Default is \code{FALSE}.}
 }
 \value{
-A `DNAStringSet` or `AAStringSet` object.
+A \code{\link[Biostrings]{DNAStringSet}} object (when
+  \code{type = "NUC"}) or \code{\link[Biostrings]{AAStringSet}} object (when
+  \code{type = "PROT"}) containing the requested sequences.
 }
 \description{
-Loads sequences from the local cache without attempting to download.
-This function relies on `getIMGT(refresh = FALSE)`. If the data is not found
-in the cache, it will be downloaded unless an internet connection is unavailable.
+Loads sequences from the local cache without attempting to
+download. This function is a convenience wrapper for
+\code{getIMGT(refresh = FALSE)}. If the data is not found in the cache, it
+will be downloaded unless an internet connection is unavailable.
 }
 \examples{
 if(is_imgt_available()) {
@@ -40,4 +48,9 @@ if(is_imgt_available()) {
   # Now, load it from the cache
   ighv_cached <- loadIMGT(species = "human", gene = "IGHV", type = "NUC")
 }
+}
+\seealso{
+\code{\link{getIMGT}} for the main download function
+
+\code{\link{refreshIMGT}} to force re-download
 }

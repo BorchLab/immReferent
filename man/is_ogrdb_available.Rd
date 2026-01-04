@@ -7,12 +7,19 @@
 is_ogrdb_available()
 }
 \value{
-A logical value: `TRUE` if the IMGT website is accessible, `FALSE` otherwise.
+A logical value: \code{TRUE} if the OGRDB website is accessible,
+  \code{FALSE} otherwise.
 }
 \description{
-This function sends a lightweight HEAD request to the main OGRDB page to
-check if the service is online and accessible.
+Sends a lightweight HEAD request to the OGRDB API to check if
+the service is online and accessible. This function is used to conditionally
+run examples and tests that require an internet connection.
 }
 \examples{
-  is_imgt_available()
+is_ogrdb_available()
+}
+\seealso{
+\code{\link{is_imgt_available}} for checking IMGT availability
+
+\code{\link{getOGRDB}} which uses this function
 }

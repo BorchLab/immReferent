@@ -12,40 +12,54 @@ exportIgBLAST(
 )
 }
 \arguments{
-\item{sequences}{A `DNAStringSet` object containing immune receptor sequences.
-Sequence names should follow IMGT nomenclature (e.g., "IGHV1-2*01").}
+\item{sequences}{A \code{\link[Biostrings]{DNAStringSet}} object containing
+immune receptor sequences. Sequence names must follow standard IG/TR gene
+nomenclature (e.g., \code{"IGHV1-2*01"}). Can be obtained from
+\code{\link{getIMGT}} or \code{\link{getOGRDB}}.}
 
-\item{output_dir}{The directory where output files will be written.}
+\item{output_dir}{Character string specifying the directory where output
+files will be written. The directory will be created if it does not exist.}
 
-\item{organism}{The organism name for the output files. Used in file naming.
-Default is "custom".}
+\item{organism}{Character string specifying the organism name for the output
+files. Used in file naming. Default is \code{"custom"}.}
 
-\item{receptor_type}{The receptor type. One of "ig" for immunoglobulin or
-"tcr" for T-cell receptor. Default is "ig".}
+\item{receptor_type}{Character string specifying the receptor type. One of
+\code{"ig"} for immunoglobulin or \code{"tcr"} for T-cell receptor. Default
+is \code{"ig"}.}
 }
 \value{
-A named list containing the paths to the created files, invisibly.
+A named list containing the paths to the created files, returned
+  invisibly. The list may contain elements \code{v_genes}, \code{d_genes},
+  and \code{j_genes} depending on which segment types were found in the
+  input sequences.
 }
 \description{
-Exports a DNAStringSet to FASTA files formatted for use with
-IgBLAST. The function creates separate FASTA files for V, D, and J gene
-segments with simplified headers compatible with IgBLAST's requirements.
+Exports a \code{\link[Biostrings]{DNAStringSet}} to FASTA files
+formatted for use with IgBLAST. The function creates separate FASTA files
+for V, D, and J gene segments with simplified headers compatible with
+IgBLAST's requirements.
 }
 \details{
 IgBLAST requires FASTA files with simplified headers containing only the
 gene/allele name. This function mimics the output of IgBLAST's
-`edit_imgt_file.pl` script, which truncates IMGT headers to keep only
+\code{edit_imgt_file.pl} script, which truncates IMGT headers to keep only
 the allele designation.
 
 Output files follow the naming convention used by IgBLAST:
-`<organism>_<receptor_type>_v.fasta`, `<organism>_<receptor_type>_d.fasta`,
-`<organism>_<receptor_type>_j.fasta`.
+\itemize{
+  \item \code{<organism>_<receptor_type>_v.fasta}
+  \item \code{<organism>_<receptor_type>_d.fasta}
+  \item \code{<organism>_<receptor_type>_j.fasta}
+}
 
-After exporting, use `makeblastdb` with the `-parse_seqids` flag to create
-the BLAST database:
-```
+After exporting, use \code{makeblastdb} with the \code{-parse_seqids} flag
+to create the BLAST database:
+\preformatted{
 makeblastdb -parse_seqids -dbtype nucl -in <fasta_file> -out <db_name>
-```
+}
+
+This function works with sequences from both \strong{IMGT} (via
+\code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
 }
 \examples{
 # Create a small example DNAStringSet
@@ -65,5 +79,10 @@ print(files)
 unlink(unlist(files))
 }
 \seealso{
-\url{https://ncbi.github.io/igblast/}
+\code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+
+\code{\link{exportMiXCR}}, \code{\link{exportTRUST4}},
+\code{\link{exportCellRanger}} for other export formats
+
+\url{https://ncbi.github.io/igblast/} for IgBLAST documentation
 }

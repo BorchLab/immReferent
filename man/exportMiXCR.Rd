@@ -11,30 +11,46 @@ exportMiXCR(
 )
 }
 \arguments{
-\item{sequences}{A `DNAStringSet` or `AAStringSet` object containing immune
-receptor sequences. Sequence names should follow IMGT nomenclature
-(e.g., "IGHV1-2*01", "TRBJ2-1*01").}
+\item{sequences}{A \code{\link[Biostrings]{DNAStringSet}} or
+\code{\link[Biostrings]{AAStringSet}} object containing immune receptor
+sequences. Sequence names must follow standard IG/TR gene nomenclature
+(e.g., \code{"IGHV1-2*01"}, \code{"TRBJ2-1*01"}). Can be obtained from
+\code{\link{getIMGT}} or \code{\link{getOGRDB}}.}
 
-\item{output_dir}{The directory where output files will be written.}
+\item{output_dir}{Character string specifying the directory where output
+files will be written. The directory will be created if it does not exist.}
 
-\item{chain}{The chain type for the output files. One of "IGH", "IGK", "IGL",
-"TRA", "TRB", "TRD", or "TRG".}
+\item{chain}{Character string specifying the chain type for the output files.
+Must be one of \code{"IGH"}, \code{"IGK"}, \code{"IGL"}, \code{"TRA"},
+\code{"TRB"}, \code{"TRD"}, or \code{"TRG"}.}
 }
 \value{
-A named list containing the paths to the created files, invisibly.
+A named list containing the paths to the created files, returned
+  invisibly. The list may contain elements \code{v_genes}, \code{d_genes},
+  \code{j_genes}, and \code{c_genes} depending on which segment types were
+  found in the input sequences.
 }
 \description{
-Exports a DNAStringSet or AAStringSet to FASTA files formatted
-for use with MiXCR's `buildLibrary` command. The function creates separate
-FASTA files for V, D, J, and C gene segments.
+Exports a \code{\link[Biostrings]{DNAStringSet}} or
+\code{\link[Biostrings]{AAStringSet}} to FASTA files formatted for use with
+MiXCR's \code{buildLibrary} command. The function creates separate FASTA
+files for V, D, J, and C gene segments.
 }
 \details{
 MiXCR expects FASTA files with simple headers containing only the gene name.
 The function filters sequences by gene type (V, D, J, C) based on the gene
 name pattern and writes separate files for each segment type.
 
-Output files follow the naming convention: `v-genes.<chain>.fasta`,
-`d-genes.<chain>.fasta`, `j-genes.<chain>.fasta`, `c-genes.<chain>.fasta`.
+Output files follow the naming convention:
+\itemize{
+  \item \code{v-genes.<chain>.fasta}
+  \item \code{d-genes.<chain>.fasta}
+  \item \code{j-genes.<chain>.fasta}
+  \item \code{c-genes.<chain>.fasta}
+}
+
+This function works with sequences from both \strong{IMGT} (via
+\code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
 }
 \examples{
 # Create a small example DNAStringSet
@@ -55,5 +71,11 @@ print(files)
 unlink(unlist(files))
 }
 \seealso{
-\url{https://mixcr.com/mixcr/guides/create-custom-library/}
+\code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+
+\code{\link{exportTRUST4}}, \code{\link{exportCellRanger}},
+\code{\link{exportIgBLAST}} for other export formats
+
+\url{https://mixcr.com/mixcr/guides/create-custom-library/} for MiXCR
+documentation
 }

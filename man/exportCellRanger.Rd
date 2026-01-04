@@ -7,30 +7,38 @@
 exportCellRanger(sequences, output_file, gene_type = NULL)
 }
 \arguments{
-\item{sequences}{A `DNAStringSet` object containing immune receptor sequences.
-Sequence names should follow IMGT nomenclature (e.g., "IGHV1-2*01").}
+\item{sequences}{A \code{\link[Biostrings]{DNAStringSet}} object containing
+immune receptor sequences. Sequence names must follow standard IG/TR gene
+nomenclature (e.g., \code{"IGHV1-2*01"}). Can be obtained from
+\code{\link{getIMGT}} or \code{\link{getOGRDB}}.}
 
-\item{output_file}{The path to the output FASTA file.}
+\item{output_file}{Character string specifying the path to the output FASTA
+file. The parent directory will be created if it does not exist.}
 
-\item{gene_type}{The type of gene region. One of "V", "D", "J", or "C".
-If NULL (default), the function will attempt to infer the type from
-sequence names.}
+\item{gene_type}{Character string specifying the type of gene region. One of
+\code{"V"}, \code{"D"}, \code{"J"}, or \code{"C"}. If \code{NULL} (default),
+the function will attempt to infer the type from sequence names.}
 }
 \value{
-The path to the created file, invisibly.
+Character string with the path to the created file, returned
+  invisibly.
 }
 \description{
-Exports a DNAStringSet to FASTA format suitable for creating
-a custom Cell Ranger VDJ reference. The function generates a FASTA file
-with properly formatted headers for use with `cellranger mkvdjref`.
+Exports a \code{\link[Biostrings]{DNAStringSet}} to FASTA format
+suitable for creating a custom Cell Ranger VDJ reference. The function
+generates a FASTA file with properly formatted headers for use with
+\code{cellranger mkvdjref}.
 }
 \details{
-Cell Ranger's `mkvdjref` command expects FASTA files with specific header
-formats. This function creates a FASTA file that can be used as input
+Cell Ranger's \code{mkvdjref} command expects FASTA files with specific
+header formats. This function creates a FASTA file that can be used as input
 to build a custom VDJ reference.
 
-Note: For a complete Cell Ranger VDJ reference, you also need a GTF file
-with gene annotations. This function only creates the FASTA component.
+\strong{Note:} For a complete Cell Ranger VDJ reference, you also need a GTF
+file with gene annotations. This function only creates the FASTA component.
+
+This function works with sequences from both \strong{IMGT} (via
+\code{\link{getIMGT}}) and \strong{OGRDB} (via \code{\link{getOGRDB}}).
 }
 \examples{
 # Create a small example DNAStringSet
@@ -51,5 +59,11 @@ cat(readLines(output_file), sep = "\n")
 unlink(output_file)
 }
 \seealso{
+\code{\link{getIMGT}}, \code{\link{getOGRDB}} for obtaining sequences
+
+\code{\link{exportMiXCR}}, \code{\link{exportTRUST4}},
+\code{\link{exportIgBLAST}} for other export formats
+
 \url{https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-5p-references}
+for Cell Ranger documentation
 }
