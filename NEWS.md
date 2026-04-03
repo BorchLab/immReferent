@@ -2,61 +2,56 @@
 
 ## New Features
 
+* Added OGRDB (AIRR Community) support with full suite of functions:
+    - `getOGRDB()`: Download germline sets from OGRDB
+    - `loadOGRDB()`: Load OGRDB sequences into environment
+    - `refreshOGRDB()`: Update locally cached OGRDB sequences
+    - `listOGRDB()`: List archived OGRDB germline set versions
+    - `is_ogrdb_available()`: Check OGRDB service availability
 * Added export functions for popular immune repertoire analysis tools:
     - `exportMiXCR()`: Export sequences for MiXCR custom library building
     - `exportTRUST4()`: Export sequences for TRUST4 analysis
     - `exportCellRanger()`: Export sequences for 10x Cell Ranger VDJ reference
     - `exportIgBLAST()`: Export sequences for IgBLAST database creation
 * Export functions work with sequences from both IMGT and OGRDB sources
+* Redirected HLA-based queries to IPD-IMGT/HLA FTP site for improved reliability
+* Added support for additional species: cynomolgus monkey, pig, and dog
 
 ## Documentation Improvements
 
+* Added package-level man page (`immReferent-package`)
+* Renamed getting-started vignette to `immReferent` and expanded content
+* Expanded caching vignette with additional guidance
 * Standardized roxygen2 documentation across all functions with proper
   formatting using `\code{}`, `\strong{}`, `\itemize{}`, and `\url{}`
 * Added comprehensive `@seealso` sections linking related functions
 * Improved parameter documentation with explicit type specifications
-* Enhanced package-level documentation with function overview
+* Added return value documentation to OGRDB functions
+* Added Bioconductor installation instructions to README and vignette
+
+## Infrastructure
+
+* Set up GitHub Actions CI (R-CMD-check on macOS, Windows, Ubuntu)
+* Added test coverage reporting via codecov
+* Added PR command workflows for `/document` and `/style`
+* CI now runs on `main`, `master`, and `devel` branches
+* Updated R version dependency from 4.2.0 to 4.5.0
+* Added spelling wordlist
+
+## Testing
+
+* Reorganized test suite: split monolithic test file into focused modules
+    - `test-mainIMGT.R`, `test-mainOGRDB.R`, `test-export.R`
+    - `test-cache.R`, `test-dowload.R`, `test-utils.R`
+* Added comprehensive unit tests for export, OGRDB, cache, download, and
+  utility functions
+
+## Bug Fixes
+
 * Fixed typo in `is_ogrdb_available()` documentation (was incorrectly
   referencing IMGT)
+* Fixed BiocCheck findings from initial submission
 
-# immReferent VERSION 0.99.5
+# immReferent 0.99.0
 
-* Added package level man page
-* Updated R version dependency from 4.2.0 to 4.5.0
-* Added installation instruction via Bioconductor to README and vignette
-* Renamed getting-started vignette to immReferent
-
-# immReferent VERSION 0.99.4
-
-* Adding return documentation to OGRDB functions
-* Requiring R 4.2 due to use of pipe
-
-# immReferent VERSION 0.99.3
-
-* Adding .Rhistory to gitignore
-* Added immReferent to profile on support.bioconductor.org
-
-# immReferent VERSION 0.99.3
-
-* Adding .Rhistory to gitignore
-* Added immReferent to profile on support.bioconductor.org
-
-# immReferent VERSION 0.99.2
-
-Add Support for OGRDB
-
-* internal .fetch_airr_files()
-* getAIRR main downloading function
-* loadAIRR for loading sequences into environment
-* refreshAIRR to update sequences
-* listAIRR to list archived versions
-
-# immReferent VERSION 0.99.1
-
-* Redirected HLA-based query to IPD-HLA/IMGT FTP site
-
-
-# immReferent VERSION 0.99.0
-
-Initial release
-
+* Initial release with IMGT sequence downloading, caching, and loading
