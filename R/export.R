@@ -1,6 +1,17 @@
 # This file contains export functions for creating reference databases
 # compatible with various immune repertoire analysis tools.
 
+# Extract gene name from sequence names that may have pipe-delimited fields.
+# Handles both OGRDB-style ("IGHV1-2*01") and IMGT-style
+# ("M99641|IGHV1-18*01|Homo_sapiens|...") names by finding the field that
+# starts with an IG/TR gene prefix.
+.extract_gene_name <- function(names) {
+  vapply(strsplit(names, "\\|"), function(fields) {
+    gene_field <- grep("^(IG|TR)", fields, value = TRUE)
+    if (length(gene_field) > 0) gene_field[1] else fields[1]
+  }, character(1))
+}
+
 #' @title Export Reference Sequences to MiXCR Format
 #'
 #' @description Exports a \code{\link[Biostrings]{DNAStringSet}} or
@@ -82,10 +93,12 @@ exportMiXCR <- function(sequences, output_dir, chain = c("IGH", "IGK", "IGL", "T
 
   # Categorize sequences by segment type
   # Pattern matches: IGHV, TRBV, etc. for V; IGHD, TRBD for D; IGHJ, TRBJ for J; IGHC, TRBC for C
-  v_idx <- grep(paste0("^", chain, "V"), seq_names)
-  d_idx <- grep(paste0("^", chain, "D"), seq_names)
-  j_idx <- grep(paste0("^", chain, "J"), seq_names)
-  c_idx <- grep(paste0("^", chain, "C"), seq_names)
+  # Use (^|\\|) to handle both OGRDB names (e.g., "IGHV1-2*01") and
+  # IMGT names with accession prefix (e.g., "M99641|IGHV1-18*01|...")
+  v_idx <- grep(paste0("(^|\\|)", chain, "V"), seq_names)
+  d_idx <- grep(paste0("(^|\\|)", chain, "D"), seq_names)
+  j_idx <- grep(paste0("(^|\\|)", chain, "J"), seq_names)
+  c_idx <- grep(paste0("(^|\\|)", chain, "C"), seq_names)
 
   output_files <- list()
 
@@ -93,9 +106,8 @@ exportMiXCR <- function(sequences, output_dir, chain = c("IGH", "IGK", "IGL", "T
   .write_mixcr_fasta <- function(seqs, path) {
     if (length(seqs) == 0) return(NULL)
     # MiXCR expects simple gene names as headers
-    # Extract just the gene name (everything before any extra annotation)
-    simple_names <- sub("\\|.*$", "", names(seqs))
-    names(seqs) <- simple_names
+    # Extract the IG/TR gene name from pipe-delimited fields
+    names(seqs) <- .extract_gene_name(names(seqs))
     Biostrings::writeXStringSet(seqs, path)
     return(path)
   }
@@ -212,8 +224,8 @@ exportTRUST4 <- function(sequences, output_file, include_constant = TRUE) {
 
   # TRUST4's BuildImgtAnnot.pl extracts only the allele name from IMGT headers
   # Format: gene*allele (e.g., IGHV1-2*01)
-  # Remove any additional annotation after the allele designation
-  simple_names <- sub("\\|.*$", "", seq_names)
+  # Extract the IG/TR gene name from pipe-delimited fields
+  simple_names <- .extract_gene_name(seq_names)
   simple_names <- sub(" .*$", "", simple_names)
   names(sequences) <- simple_names
 
@@ -302,8 +314,8 @@ exportCellRanger <- function(sequences, output_file, gene_type = NULL) {
   }
 
   # Cell Ranger expects clean gene names
-  # Format headers as: >gene_name
-  simple_names <- sub("\\|.*$", "", seq_names)
+  # Extract the IG/TR gene name from pipe-delimited fields
+  simple_names <- .extract_gene_name(seq_names)
   simple_names <- sub(" .*$", "", simple_names)
   names(sequences) <- simple_names
 
@@ -407,15 +419,16 @@ exportIgBLAST <- function(sequences, output_dir, organism = "custom", receptor_t
   }
 
   # IgBLAST's edit_imgt_file.pl simplifies headers to just the allele name
+  # Use (^|\\|) to handle both OGRDB names and IMGT accession-prefixed names
   # Categorize by segment type
   if (receptor_type == "ig") {
-    v_idx <- grep("^IG[HKL]V", seq_names)
-    d_idx <- grep("^IGHD", seq_names)
-    j_idx <- grep("^IG[HKL]J", seq_names)
+    v_idx <- grep("(^|\\|)IG[HKL]V", seq_names)
+    d_idx <- grep("(^|\\|)IGHD", seq_names)
+    j_idx <- grep("(^|\\|)IG[HKL]J", seq_names)
   } else {
-    v_idx <- grep("^TR[ABDG]V", seq_names)
-    d_idx <- grep("^TR[BD]D", seq_names)
-    j_idx <- grep("^TR[ABDG]J", seq_names)
+    v_idx <- grep("(^|\\|)TR[ABDG]V", seq_names)
+    d_idx <- grep("(^|\\|)TR[BD]D", seq_names)
+    j_idx <- grep("(^|\\|)TR[ABDG]J", seq_names)
   }
 
   output_files <- list()
@@ -423,8 +436,8 @@ exportIgBLAST <- function(sequences, output_dir, organism = "custom", receptor_t
   # Helper function to write FASTA with IgBLAST-compatible headers
   .write_igblast_fasta <- function(seqs, path) {
     if (length(seqs) == 0) return(NULL)
-    # Simplify names to just allele designation
-    simple_names <- sub("\\|.*$", "", names(seqs))
+    # Extract the IG/TR gene name from pipe-delimited fields
+    simple_names <- .extract_gene_name(names(seqs))
     simple_names <- sub(" .*$", "", simple_names)
     names(seqs) <- simple_names
     Biostrings::writeXStringSet(seqs, path)
