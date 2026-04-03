@@ -180,6 +180,31 @@ testthat::test_that("exportMiXCR() removes extra annotation from headers", {
   expect_false(any(grepl("Homo sapiens", content)))
 })
 
+testthat::test_that("exportMiXCR() handles IMGT-style accession-prefixed names", {
+  seqs <- Biostrings::DNAStringSet(c(
+    "ATGCGATCGATCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCG",
+    "ATGCGATCGATC",
+    "ATGCGATC"
+  ))
+  names(seqs) <- c(
+    "M99641|IGHV1-18*01|Homo_sapiens|F|V-REGION|188..483|296 nt|1| | | | |296+24=320| | |",
+    "X97051|IGHD1-1*01|Homo_sapiens|F|D-REGION|7..17|11 nt|1| | | | |11+0=11| | |",
+    "J00256|IGHJ1*01|Homo_sapiens|F|J-REGION|1..48|48 nt|1| | | | |48+0=48| | |",
+    "X64141|IGHM*01|Homo_sapiens|F|CH1|1..100"
+  )
+
+  output_dir <- withr::local_tempdir()
+  result <- exportMiXCR(seqs, output_dir, chain = "IGH")
+
+  expect_true(!is.null(result$v_genes))
+  expect_true(!is.null(result$d_genes))
+  expect_true(!is.null(result$j_genes))
+
+  v_content <- readLines(result$v_genes)
+  expect_true(any(grepl("^>IGHV1-18\\*01$", v_content)))
+})
+
 # ==============================================================================
 # Tests for exportTRUST4()
 # ==============================================================================
@@ -476,6 +501,29 @@ testthat::test_that("exportIgBLAST() removes extra annotation from headers", {
   j_content <- readLines(result$j_genes)
   expect_true(any(grepl("^>IGHJ1\\*01$", j_content)))
   expect_false(any(grepl("extra info", j_content)))
+})
+
+testthat::test_that("exportIgBLAST() handles IMGT-style accession-prefixed names", {
+  seqs <- Biostrings::DNAStringSet(c(
+    "ATGCGATCGATCGATCGATCGATCGATCG",
+    "ATGCGATCGATCGATCG",
+    "ATGCGATCGATC"
+  ))
+  names(seqs) <- c(
+    "M99641|IGHV1-18*01|Homo_sapiens|F|V-REGION|188..483|296 nt|1| | | | |296+24=320| | |",
+    "X97051|IGHD1-1*01|Homo_sapiens|F|D-REGION|7..17|11 nt|1| | | | |11+0=11| | |",
+    "J00256|IGHJ1*01|Homo_sapiens|F|J-REGION|1..48|48 nt|1| | | | |48+0=48| | |"
+  )
+
+  output_dir <- withr::local_tempdir()
+  result <- exportIgBLAST(seqs, output_dir, organism = "human", receptor_type = "ig")
+
+  expect_true(!is.null(result$v_genes))
+  expect_true(!is.null(result$d_genes))
+  expect_true(!is.null(result$j_genes))
+
+  v_content <- readLines(result$v_genes)
+  expect_true(any(grepl("^>IGHV1-18\\*01$", v_content)))
 })
 
 testthat::test_that("exportIgBLAST() uses custom organism name", {

@@ -217,7 +217,9 @@ igh_seqs <- getIMGT(species = "human",
 
 # Export to MiXCR format
 mixcr_dir <- tempdir()
-mixcr_files <- exportMiXCR(igh_seqs, mixcr_dir, chain = "IGH")
+mixcr_files <- exportMiXCR(igh_seqs, 
+                           mixcr_dir, 
+                           chain = "IGH")
 
 # View created files
 print(mixcr_files)
